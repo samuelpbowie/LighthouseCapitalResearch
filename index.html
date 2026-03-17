@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lighthouse Capital Research</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --navy:   #0b1f3a;
+      --blue:   #1a3d6b;
+      --gold:   #c9a84c;
+      --light:  #f4f6f9;
+      --white:  #ffffff;
+      --text:   #d0d8e8;
+      --muted:  #8a9ab8;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Georgia', serif;
+      background: var(--navy);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* ── Nav ── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.2rem 4rem;
+      background: rgba(11, 31, 58, 0.92);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid rgba(201, 168, 76, 0.2);
+    }
+
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      text-decoration: none;
+    }
+
+    .nav-logo svg { flex-shrink: 0; }
+
+    .nav-logo-text {
+      font-size: 1.05rem;
+      letter-spacing: 0.06em;
+      color: var(--white);
+      text-transform: uppercase;
+    }
+
+    .nav-logo-text span { color: var(--gold); }
+
+    nav ul {
+      list-style: none;
+      display: flex;
+      gap: 2.5rem;
+    }
+
+    nav ul a {
+      color: var(--muted);
+      text-decoration: none;
+      font-family: 'Arial', sans-serif;
+      font-size: 0.85rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      transition: color 0.2s;
+    }
+
+    nav ul a:hover { color: var(--gold); }
+
+    /* ── Hero ── */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 8rem 2rem 4rem;
+      background:
+        radial-gradient(ellipse at 50% 0%, rgba(26,61,107,0.6) 0%, transparent 70%),
+        linear-gradient(180deg, #0b1f3a 0%, #06111f 100%);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        repeating-linear-gradient(0deg, transparent, transparent 79px, rgba(255,255,255,0.02) 80px),
+        repeating-linear-gradient(90deg, transparent, transparent 79px, rgba(255,255,255,0.02) 80px);
+      pointer-events: none;
+    }
+
+    .beacon {
+      width: 80px;
+      height: 80px;
+      margin-bottom: 2rem;
+      position: relative;
+    }
+
+    .beacon svg {
+      width: 100%;
+      height: 100%;
+      filter: drop-shadow(0 0 18px rgba(201,168,76,0.5));
+    }
+
+    .hero-eyebrow {
+      font-family: 'Arial', sans-serif;
+      font-size: 0.75rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 1.25rem;
+    }
+
+    h1 {
+      font-size: clamp(2.4rem, 5vw, 4rem);
+      font-weight: 400;
+      color: var(--white);
+      line-height: 1.15;
+      max-width: 760px;
+      margin-bottom: 1.5rem;
+    }
+
+    h1 em {
+      font-style: italic;
+      color: var(--gold);
+    }
+
+    .hero-sub {
+      font-family: 'Arial', sans-serif;
+      font-size: 1.05rem;
+      color: var(--muted);
+      max-width: 540px;
+      line-height: 1.7;
+      margin-bottom: 2.75rem;
+    }
+
+    .btn-group { display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center; }
+
+    .btn {
+      display: inline-block;
+      padding: 0.85rem 2rem;
+      border-radius: 3px;
+      font-family: 'Arial', sans-serif;
+      font-size: 0.85rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      text-decoration: none;
+      transition: all 0.2s;
+      cursor: pointer;
+    }
+
+    .btn-primary {
+      background: var(--gold);
+      color: var(--navy);
+      border: 2px solid var(--gold);
+      font-weight: 700;
+    }
+
+    .btn-primary:hover { background: #e0bb5a; border-color: #e0bb5a; }
+
+    .btn-outline {
+      background: transparent;
+      color: var(--white);
+      border: 2px solid rgba(255,255,255,0.25);
+    }
+
+    .btn-outline:hover { border-color: var(--gold); color: var(--gold); }
+
+    .divider {
+      width: 60px;
+      height: 2px;
+      background: var(--gold);
+      margin: 0 auto 1.5rem;
+    }
+
+    /* ── Pillars ── */
+    .pillars {
+      padding: 6rem 4rem;
+      background: #06111f;
+    }
+
+    .section-header {
+      text-align: center;
+      margin-bottom: 4rem;
+    }
+
+    .section-eyebrow {
+      font-family: 'Arial', sans-serif;
+      font-size: 0.7rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 0.75rem;
+    }
+
+    .section-header h2 {
+      font-size: clamp(1.6rem, 3vw, 2.4rem);
+      font-weight: 400;
+      color: var(--white);
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1.5rem;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .card {
+      background: rgba(26,61,107,0.18);
+      border: 1px solid rgba(201,168,76,0.15);
+      border-radius: 6px;
+      padding: 2.25rem 2rem;
+      transition: border-color 0.25s, transform 0.25s;
+    }
+
+    .card:hover {
+      border-color: rgba(201,168,76,0.5);
+      transform: translateY(-4px);
+    }
+
+    .card-icon {
+      font-size: 1.8rem;
+      margin-bottom: 1.1rem;
+    }
+
+    .card h3 {
+      font-size: 1.1rem;
+      color: var(--white);
+      margin-bottom: 0.75rem;
+      font-weight: 400;
+      letter-spacing: 0.02em;
+    }
+
+    .card p {
+      font-family: 'Arial', sans-serif;
+      font-size: 0.9rem;
+      color: var(--muted);
+      line-height: 1.65;
+    }
+
+    /* ── Stats bar ── */
+    .stats {
+      background: var(--blue);
+      border-top: 1px solid rgba(201,168,76,0.2);
+      border-bottom: 1px solid rgba(201,168,76,0.2);
+      padding: 3.5rem 4rem;
+      display: flex;
+      justify-content: center;
+      gap: 5rem;
+      flex-wrap: wrap;
+    }
+
+    .stat { text-align: center; }
+
+    .stat-number {
+      font-size: 2.4rem;
+      color: var(--gold);
+      display: block;
+      margin-bottom: 0.3rem;
+    }
+
+    .stat-label {
+      font-family: 'Arial', sans-serif;
+      font-size: 0.75rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    /* ── CTA ── */
+    .cta {
+      padding: 7rem 2rem;
+      text-align: center;
+      background: linear-gradient(180deg, #06111f 0%, #0b1f3a 100%);
+    }
+
+    .cta h2 {
+      font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+      font-weight: 400;
+      color: var(--white);
+      margin-bottom: 1rem;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .cta p {
+      font-family: 'Arial', sans-serif;
+      color: var(--muted);
+      margin-bottom: 2.5rem;
+    }
+
+    /* ── Footer ── */
+    footer {
+      background: #040d18;
+      padding: 2.5rem 4rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+      border-top: 1px solid rgba(255,255,255,0.05);
+    }
+
+    .footer-copy {
+      font-family: 'Arial', sans-serif;
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+
+    .footer-note {
+      font-family: 'Arial', sans-serif;
+      font-size: 0.75rem;
+      color: rgba(138,154,184,0.5);
+      max-width: 480px;
+      text-align: right;
+      line-height: 1.5;
+    }
+
+    @media (max-width: 700px) {
+      nav { padding: 1rem 1.5rem; }
+      nav ul { display: none; }
+      .pillars, .stats { padding: 4rem 1.5rem; }
+      footer { flex-direction: column; text-align: center; }
+      .footer-note { text-align: center; }
+      .stats { gap: 2.5rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Nav -->
+  <nav>
+    <a href="#" class="nav-logo">
+      <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <polygon points="14,2 18,10 27,11 21,17 23,26 14,21 5,26 7,17 1,11 10,10" fill="none" stroke="#c9a84c" stroke-width="1.5" stroke-linejoin="round"/>
+        <circle cx="14" cy="14" r="3" fill="#c9a84c"/>
+      </svg>
+      <span class="nav-logo-text">Lighthouse <span>Capital</span> Research</span>
+    </a>
+    <ul>
+      <li><a href="#approach">Approach</a></li>
+      <li><a href="#focus">Focus Areas</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+  </nav>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="beacon">
+      <svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- Lighthouse beam rays -->
+        <line x1="40" y1="30" x2="10" y2="5"  stroke="#c9a84c" stroke-width="1" opacity="0.4"/>
+        <line x1="40" y1="30" x2="40" y2="2"  stroke="#c9a84c" stroke-width="1" opacity="0.6"/>
+        <line x1="40" y1="30" x2="70" y2="5"  stroke="#c9a84c" stroke-width="1" opacity="0.4"/>
+        <!-- Tower -->
+        <rect x="34" y="30" width="12" height="30" rx="1" fill="#c9a84c" opacity="0.9"/>
+        <rect x="30" y="58" width="20" height="5"  rx="1" fill="#c9a84c"/>
+        <!-- Light housing -->
+        <rect x="31" y="22" width="18" height="10" rx="2" fill="#c9a84c"/>
+        <circle cx="40" cy="27" r="4" fill="#0b1f3a"/>
+        <circle cx="40" cy="27" r="2" fill="#f0d080"/>
+        <!-- Base -->
+        <rect x="26" y="63" width="28" height="4" rx="1" fill="#c9a84c" opacity="0.6"/>
+      </svg>
+    </div>
+    <p class="hero-eyebrow">Independent · Rigorous · Insightful</p>
+    <h1>Illuminating Opportunity<br>Through <em>Deep Research</em></h1>
+    <p class="hero-sub">
+      Lighthouse Capital Research delivers institutional-grade analysis to help investors navigate complexity and identify enduring value.
+    </p>
+    <div class="btn-group">
+      <a href="#focus" class="btn btn-primary">Our Focus Areas</a>
+      <a href="#contact" class="btn btn-outline">Get in Touch</a>
+    </div>
+  </section>
+
+  <!-- Stats -->
+  <div class="stats">
+    <div class="stat">
+      <span class="stat-number">15+</span>
+      <span class="stat-label">Years of Experience</span>
+    </div>
+    <div class="stat">
+      <span class="stat-number">200+</span>
+      <span class="stat-label">Companies Covered</span>
+    </div>
+    <div class="stat">
+      <span class="stat-number">$0</span>
+      <span class="stat-label">Conflicts of Interest</span>
+    </div>
+  </div>
+
+  <!-- Approach -->
+  <section class="pillars" id="approach">
+    <div class="section-header">
+      <p class="section-eyebrow">How We Work</p>
+      <div class="divider"></div>
+      <h2>Our Research Philosophy</h2>
+    </div>
+    <div class="cards">
+      <div class="card">
+        <div class="card-icon">🔍</div>
+        <h3>Fundamental Analysis</h3>
+        <p>We go beyond the surface — examining financials, competitive dynamics, management quality, and industry structure to build a complete picture.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">📐</div>
+        <h3>Quantitative Rigor</h3>
+        <p>Our proprietary models stress-test assumptions across scenarios, grounding every thesis in data and defensible valuation frameworks.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">🧭</div>
+        <h3>Long-Term Perspective</h3>
+        <p>We focus on durable competitive advantages and multi-year return potential — not quarterly noise or short-term market sentiment.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Focus Areas -->
+  <section class="pillars" id="focus" style="background: #0b1f3a;">
+    <div class="section-header">
+      <p class="section-eyebrow">Coverage Universe</p>
+      <div class="divider"></div>
+      <h2>Areas of Focus</h2>
+    </div>
+    <div class="cards">
+      <div class="card">
+        <div class="card-icon">💼</div>
+        <h3>Small &amp; Mid-Cap Equities</h3>
+        <p>Underanalyzed companies where independent research creates genuine informational edge and alpha potential.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">🏗️</div>
+        <h3>Special Situations</h3>
+        <p>Spin-offs, restructurings, and corporate events that create temporary dislocations between price and intrinsic value.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">🌐</div>
+        <h3>Emerging Markets</h3>
+        <p>High-conviction opportunities in markets where complexity and information asymmetry reward careful fundamental work.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta" id="contact">
+    <p class="section-eyebrow">Get in Touch</p>
+    <div class="divider"></div>
+    <h2>Ready to See What We're Working On?</h2>
+    <p>Reach out to learn more about our research and how we can help.</p>
+    <a href="mailto:research@lighthousecapital.com" class="btn btn-primary">Contact Us</a>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <span class="footer-copy">&copy; 2026 Lighthouse Capital Research. All rights reserved.</span>
+    <span class="footer-note">For informational purposes only. Nothing on this site constitutes investment advice or a solicitation to buy or sell any security.</span>
+  </footer>
+
+</body>
+</html>
