@@ -63,9 +63,7 @@
     .scenario-btn { font-family: 'Arial', sans-serif; font-size: 0.8rem; font-weight: 600; padding: 0.4rem 1.1rem; border-radius: 4px; border: 1.5px solid var(--border); background: var(--white); color: var(--muted); cursor: pointer; transition: all 0.15s; }
     .scenario-btn:hover { border-color: var(--blue); color: var(--blue); }
     .scenario-btn.active[data-scenario="Weighted Average"] { background: var(--indigo); border-color: var(--indigo); color: #fff; }
-    .scenario-btn.active[data-scenario="Base"]        { background: var(--blue);  border-color: var(--blue);  color: #fff; }
-    .scenario-btn.active[data-scenario="Pessimistic"] { background: var(--red);   border-color: var(--red);   color: #fff; }
-    .scenario-btn.active[data-scenario="Optimistic"]  { background: var(--green); border-color: var(--green); color: #fff; }
+    .scenario-btn.active[data-scenario="Scenarios"]       { background: #1e293b;      border-color: #1e293b;      color: #fff; }
 
     /* Charts */
     .chart-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
@@ -264,9 +262,7 @@
           <div class="scenario-bar">
             <label>Scenario:</label>
             <button class="scenario-btn active" data-scenario="Weighted Average">Wtd Avg</button>
-            <button class="scenario-btn" data-scenario="Base">Base</button>
-            <button class="scenario-btn" data-scenario="Pessimistic">Bear</button>
-            <button class="scenario-btn" data-scenario="Optimistic">Bull</button>
+            <button class="scenario-btn" data-scenario="Scenarios">Scenarios</button>
           </div>
 
           <div class="chart-grid" style="margin-bottom:1.5rem;">
@@ -341,7 +337,7 @@
 
         <div id="ff-content" style="display:none;">
           <p style="font-family:Arial,sans-serif;font-size:0.82rem;color:var(--muted);margin-bottom:1.25rem;line-height:1.6;">
-            Implied share price ranges across valuation methodologies. Bars show the Low–High range; ◆ marks the average. Dashed line = current stock price.
+            Implied share price ranges across valuation methodologies. Bars show the Low–High range; ◆ marks the mid. Dashed line = current stock price.
           </p>
           <div style="position:relative;height:380px;">
             <canvas id="footballFieldChart"></canvas>
@@ -496,6 +492,94 @@
     lineChart('marginChart', marg, true);
     barChart('fcfChart',     fcf,  'FCF ($M)');
     barChart('epsChart',     eps,  'EPS');
+  }
+
+  // ── Scenarios mode: grouped Base / Bear / Bull charts ────────────────────
+  function buildChartsScenarios() {
+    const m     = MODEL;
+    const years = m.years;
+    const HIST  = 4;
+
+    const SC = [
+      { key: 'Base',        label: 'Base', color: COLORS['Base']        },
+      { key: 'Pessimistic', label: 'Bear', color: COLORS['Pessimistic'] },
+      { key: 'Optimistic',  label: 'Bull', color: COLORS['Optimistic']  },
+    ];
+
+    function scenariosBar(id, metricKey) {
+      if (charts[id]) charts[id].destroy();
+      // Historical dataset: values only for historical indices (single grey bar per year)
+      // Scenario datasets: values only for projection indices (3 colored bars per year)
+      const baseArr = m.metrics[metricKey]['Base'] || [];
+      const datasets = [
+        {
+          label: 'Historical',
+          data: baseArr.map((v, i) => i < HIST ? v : null),
+          backgroundColor: 'rgba(148,163,184,0.7)',
+          borderColor: '#64748b',
+          borderWidth: 1,
+        },
+        ...SC.map(s => ({
+          label: s.label,
+          data: (m.metrics[metricKey][s.key] || []).map((v, i) => i < HIST ? null : v),
+          backgroundColor: hexAlpha(s.color, 0.75),
+          borderColor: s.color,
+          borderWidth: 1,
+        })),
+      ];
+      charts[id] = new Chart(document.getElementById(id).getContext('2d'), {
+        type: 'bar',
+        data: { labels: years, datasets },
+        options: {
+          responsive: true, maintainAspectRatio: true,
+          plugins: { legend: { display: false } },
+          scales: {
+            x: { grid: { display: false }, ticks: { maxRotation: 45 } },
+            y: { grid: { color: 'rgba(0,0,0,0.04)' }, ticks: { callback: v => Math.abs(v) >= 1000 ? (v/1000).toFixed(1)+'B' : v } },
+          },
+        },
+      });
+    }
+
+    function scenariosLine(id, metricKey) {
+      if (charts[id]) charts[id].destroy();
+      const baseArr = m.metrics[metricKey]['Base'] || [];
+      const histData = baseArr.map((v, i) => i < HIST ? v : null);
+      if (baseArr[HIST] != null) histData[HIST] = baseArr[HIST];
+      const histDs = {
+        label: 'Historical', data: histData,
+        borderColor: '#94a3b8', backgroundColor: 'transparent',
+        borderWidth: 2, pointRadius: 3, spanGaps: false,
+      };
+      const projDs = SC.map(s => {
+        const arr = m.metrics[metricKey][s.key] || [];
+        const proj = arr.map((v, i) => i < HIST ? null : v);
+        if (arr[HIST - 1] != null) proj[HIST - 1] = arr[HIST - 1];
+        return {
+          label: s.label, data: proj,
+          borderColor: s.color, backgroundColor: 'transparent',
+          borderWidth: 2, pointRadius: 3, borderDash: [4, 3], spanGaps: false,
+        };
+      });
+      charts[id] = new Chart(document.getElementById(id).getContext('2d'), {
+        type: 'line',
+        data: { labels: years, datasets: [histDs, ...projDs] },
+        options: {
+          responsive: true, maintainAspectRatio: true,
+          plugins: { legend: { display: false } },
+          scales: {
+            x: { grid: { display: false }, ticks: { maxRotation: 45 } },
+            y: { grid: { color: 'rgba(0,0,0,0.04)' }, ticks: { callback: v => v + '%' } },
+          },
+        },
+      });
+    }
+
+    scenariosBar('revenueChart', 'Revenue');
+    scenariosBar('ebitdaChart',  'EBITDA');
+    scenariosLine('marginChart', 'EBITDAMargin');
+    scenariosBar('fcfChart',     'FCF');
+    scenariosBar('epsChart',     'EPS');
   }
 
   function hexAlpha(hex, alpha) {
@@ -660,8 +744,12 @@
 
     // Returns inline border styles for a cell at (ri, ci)
     function boxBorders(ri, ci) {
-      const inBox = ri >= rMin && ri <= rMax && ci >= cMin && ci <= cMax;
-      if (!inBox) return '';
+      const inBox    = ri >= rMin && ri <= rMax && ci >= cMin && ci <= cMax;
+      // Also set border-bottom on the row just above the box so the shared
+      // edge is declared from both sides — fixes border-collapse eating the top line
+      const aboveTop = rMin > 0 && ri === rMin - 1 && ci >= cMin && ci <= cMax;
+      if (!inBox && !aboveTop) return '';
+      if (aboveTop) return `border-bottom:${BW} solid ${BOX_COLOR};`;
       const top    = ri === rMin ? `border-top:${BW} solid ${BOX_COLOR};`    : '';
       const bottom = ri === rMax ? `border-bottom:${BW} solid ${BOX_COLOR};` : '';
       const left   = ci === cMin ? `border-left:${BW} solid ${BOX_COLOR};`   : '';
@@ -996,7 +1084,7 @@
                 const item = items[ctx.dataIndex];
                 return [
                   ` Low:  $${item.low != null ? item.low.toFixed(1) : '—'}`,
-                  ` Avg:  $${item.avg != null ? item.avg.toFixed(1) : '—'}`,
+                  ` Mid:  $${item.avg != null ? item.avg.toFixed(1) : '—'}`,
                   ` High: $${item.high != null ? item.high.toFixed(1) : '—'}`,
                 ];
               },
@@ -1031,53 +1119,70 @@
     }).join('');
   }
 
-  // ── Comps Table ───────────────────────────────────────────────────────────
+  // ── Comps Table (transposed: metrics = rows, companies = columns) ──────────
   function buildCompsTable() {
     const comps = MODEL.comps;
+    const peers = comps.filter(c => c.ticker !== 'OKTA');
+
     const fmtB  = v => v == null ? '—' : `$${(v / 1000).toFixed(1)}B`;
-    const fmtM  = v => v == null ? '—' : `$${Math.round(v).toLocaleString()}M`;
+    const fmtM  = v => v == null ? '—'
+                     : v < 0    ? `($${Math.round(Math.abs(v)).toLocaleString()}M)`
+                     :             `$${Math.round(v).toLocaleString()}M`;
     const fmtMx = v => v == null ? 'N/M' : `${v.toFixed(1)}x`;
     const fmtP2 = v => v == null ? '—' : `$${v.toFixed(2)}`;
 
-    const cols = [
-      { label: 'Company',       fn: c => `<strong>${c.name}</strong><br><span style="font-weight:400;color:var(--muted);font-size:0.78rem;">${c.ticker}</span>` },
-      { label: 'As Of',         fn: c => c.fileDate ?? '—' },
-      { label: 'Price',         fn: c => fmtP2(c.price) },
-      { label: 'Mkt Cap',       fn: c => fmtB(c.mktCap) },
-      { label: 'EV',            fn: c => fmtB(c.ev) },
-      { label: 'TTM Revenue',   fn: c => fmtM(c.revenue) },
-      { label: 'TTM EBITDA',    fn: c => fmtM(c.ebitda) },
-      { label: 'EV / Revenue',  fn: c => fmtMx(c.evRev) },
-      { label: 'EV / EBITDA',   fn: c => fmtMx(c.evEbitda) },
-      { label: 'P / E',         fn: c => fmtMx(c.pe) },
+    // Each entry: label, accessor, formatter, whether to show peer median
+    const rows = [
+      { label: 'As Of',         get: c => c.fileDate,  fmt: v => v ?? '—',  med: false },
+      { label: 'Price',         get: c => c.price,     fmt: fmtP2,           med: false },
+      { label: 'Mkt Cap',       get: c => c.mktCap,    fmt: fmtB,            med: false },
+      { label: 'EV',            get: c => c.ev,        fmt: fmtB,            med: false },
+      { label: 'TTM Revenue',   get: c => c.revenue,   fmt: fmtM,            med: false },
+      { label: 'TTM EBITDA',    get: c => c.ebitda,    fmt: fmtM,            med: false },
+      { sep: true },
+      { label: 'EV / Revenue',  get: c => c.evRev,    fmt: fmtMx,           med: true  },
+      { label: 'EV / EBITDA',   get: c => c.evEbitda, fmt: fmtMx,           med: true  },
+      { label: 'P / E',         get: c => c.pe,        fmt: fmtMx,           med: true  },
     ];
 
-    const thead = `<thead><tr>${cols.map(col =>
-      `<th style="white-space:nowrap;">${col.label}</th>`
-    ).join('')}</tr></thead>`;
+    // Header: blank + one th per company + Peer Median
+    const thead = `<thead><tr>
+      <th></th>
+      ${comps.map(c => {
+        const isOkta = c.ticker === 'OKTA';
+        return `<th style="text-align:center;white-space:nowrap;${isOkta ? 'background:var(--blue-light);' : ''}">
+          <span style="color:${isOkta ? 'var(--blue-dark)' : 'var(--text)'};">${c.name}</span><br>
+          <span style="font-weight:400;font-size:0.72rem;color:${isOkta ? 'var(--blue)' : 'var(--muted)'};">${c.ticker}</span>
+        </th>`;
+      }).join('')}
+      <th style="text-align:center;color:var(--muted);font-weight:400;font-style:italic;white-space:nowrap;">Peer Median</th>
+    </tr></thead>`;
 
-    const tbody = '<tbody>' + comps.map(c => {
-      const isOkta = c.ticker === 'OKTA';
-      const rowStyle = isOkta
-        ? 'background:var(--blue-light);font-weight:600;'
-        : '';
-      const cells = cols.map(col =>
-        `<td style="${isOkta ? 'color:var(--blue-dark);' : ''}">${col.fn(c)}</td>`
-      ).join('');
-      return `<tr style="${rowStyle}">${cells}</tr>`;
+    const tbody = '<tbody>' + rows.map(row => {
+      if (row.sep) {
+        return `<tr><td colspan="${comps.length + 2}" style="height:2px;background:var(--border);padding:0;border:none;"></td></tr>`;
+      }
+
+      // Peer median value for this metric
+      let medHtml = '<td style="text-align:right;color:var(--muted);font-style:italic;">—</td>';
+      if (row.med) {
+        const vals = peers.map(c => row.get(c)).filter(v => v != null);
+        const med  = median(vals);
+        medHtml = `<td style="text-align:right;color:var(--muted);font-style:italic;">${med != null ? fmtMx(med) : '—'}</td>`;
+      }
+
+      const cells = comps.map(c => {
+        const isOkta = c.ticker === 'OKTA';
+        const val    = row.fmt(row.get(c));
+        return `<td style="text-align:right;${isOkta ? 'background:var(--blue-light);color:var(--blue-dark);font-weight:600;' : ''}">${val}</td>`;
+      }).join('');
+
+      return `<tr><td style="color:var(--text);font-weight:500;white-space:nowrap;">${row.label}</td>${cells}${medHtml}</tr>`;
     }).join('') + '</tbody>';
 
     document.getElementById('compsTable').innerHTML = thead + tbody;
-
-    // Median row
-    const medians = {
-      evRev:    median(comps.filter(c => c.ticker !== 'OKTA' && c.evRev   != null).map(c => c.evRev)),
-      evEbitda: median(comps.filter(c => c.ticker !== 'OKTA' && c.evEbitda!= null).map(c => c.evEbitda)),
-      pe:       median(comps.filter(c => c.ticker !== 'OKTA' && c.pe      != null).map(c => c.pe)),
-    };
     document.getElementById('comps-note').textContent =
-      `Peer median (ex-Okta): EV/Revenue ${fmtMx(medians.evRev)} · EV/EBITDA ${fmtMx(medians.evEbitda)} · P/E ${fmtMx(medians.pe)}. `+
-      `N/M = not meaningful (negative or >500× multiple).`;
+      'N/M = not meaningful (negative or >500× multiple). Peer Median excludes Okta.';
   }
 
   function median(arr) {
@@ -1094,8 +1199,13 @@
         document.querySelectorAll('.scenario-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         activeSc = btn.dataset.scenario;
-        buildCharts(activeSc);
-        buildKpiTable(activeSc);
+        if (activeSc === 'Scenarios') {
+          buildChartsScenarios();
+          buildKpiTable('Weighted Average');
+        } else {
+          buildCharts(activeSc);
+          buildKpiTable(activeSc);
+        }
       });
     });
 
