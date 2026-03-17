@@ -8,20 +8,21 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --navy:   #0b1f3a;
-      --blue:   #1a3d6b;
-      --gold:   #c9a84c;
-      --light:  #f4f6f9;
-      --white:  #ffffff;
-      --text:   #d0d8e8;
-      --muted:  #8a9ab8;
+      --blue:     #1a56db;
+      --blue-dark:#1240a8;
+      --blue-light:#e8f0fe;
+      --white:    #ffffff;
+      --offwhite: #f7f9fc;
+      --text:     #1e293b;
+      --muted:    #64748b;
+      --border:   #e2e8f0;
     }
 
     html { scroll-behavior: smooth; }
 
     body {
       font-family: 'Georgia', serif;
-      background: var(--navy);
+      background: var(--white);
       color: var(--text);
       min-height: 100vh;
     }
@@ -35,9 +36,10 @@
       align-items: center;
       justify-content: space-between;
       padding: 1.2rem 4rem;
-      background: rgba(11, 31, 58, 0.92);
+      background: rgba(255,255,255,0.95);
       backdrop-filter: blur(8px);
-      border-bottom: 1px solid rgba(201, 168, 76, 0.2);
+      border-bottom: 1px solid var(--border);
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
     }
 
     .nav-logo {
@@ -52,11 +54,11 @@
     .nav-logo-text {
       font-size: 1.05rem;
       letter-spacing: 0.06em;
-      color: var(--white);
+      color: var(--text);
       text-transform: uppercase;
     }
 
-    .nav-logo-text span { color: var(--gold); }
+    .nav-logo-text span { color: var(--blue); }
 
     nav ul {
       list-style: none;
@@ -74,7 +76,57 @@
       transition: color 0.2s;
     }
 
-    nav ul a:hover { color: var(--gold); }
+    nav ul a:hover { color: var(--blue); }
+
+    /* ── Dropdown ── */
+    .nav-dropdown { position: relative; }
+
+    .nav-dropdown > a {
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+
+    .nav-dropdown > a::after {
+      content: '▾';
+      font-size: 0.7rem;
+      transition: transform 0.2s;
+    }
+
+    .nav-dropdown:hover > a::after { transform: rotate(180deg); }
+
+    .dropdown-menu {
+      display: none;
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      padding-top: 0.75rem;
+      min-width: 180px;
+    }
+
+    .dropdown-menu-inner {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+      overflow: hidden;
+    }
+
+    .nav-dropdown:hover .dropdown-menu { display: block; }
+
+    .dropdown-menu a {
+      display: block;
+      padding: 0.7rem 1.25rem;
+      color: var(--text) !important;
+      text-transform: none !important;
+      letter-spacing: 0.02em !important;
+      font-size: 0.875rem !important;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .dropdown-menu a:last-child { border-bottom: none; }
+    .dropdown-menu a:hover { background: var(--blue-light); color: var(--blue) !important; }
 
     /* ── Hero ── */
     .hero {
@@ -86,8 +138,8 @@
       text-align: center;
       padding: 8rem 2rem 4rem;
       background:
-        radial-gradient(ellipse at 50% 0%, rgba(26,61,107,0.6) 0%, transparent 70%),
-        linear-gradient(180deg, #0b1f3a 0%, #06111f 100%);
+        radial-gradient(ellipse at 50% 0%, rgba(26,86,219,0.08) 0%, transparent 70%),
+        linear-gradient(180deg, #ffffff 0%, #f0f5ff 100%);
       position: relative;
       overflow: hidden;
     }
@@ -97,8 +149,8 @@
       position: absolute;
       inset: 0;
       background-image:
-        repeating-linear-gradient(0deg, transparent, transparent 79px, rgba(255,255,255,0.02) 80px),
-        repeating-linear-gradient(90deg, transparent, transparent 79px, rgba(255,255,255,0.02) 80px);
+        repeating-linear-gradient(0deg, transparent, transparent 79px, rgba(26,86,219,0.03) 80px),
+        repeating-linear-gradient(90deg, transparent, transparent 79px, rgba(26,86,219,0.03) 80px);
       pointer-events: none;
     }
 
@@ -112,7 +164,7 @@
     .beacon svg {
       width: 100%;
       height: 100%;
-      filter: drop-shadow(0 0 18px rgba(201,168,76,0.5));
+      filter: drop-shadow(0 0 18px rgba(26,86,219,0.3));
     }
 
     .hero-eyebrow {
@@ -120,14 +172,14 @@
       font-size: 0.75rem;
       letter-spacing: 0.25em;
       text-transform: uppercase;
-      color: var(--gold);
+      color: var(--blue);
       margin-bottom: 1.25rem;
     }
 
     h1 {
       font-size: clamp(2.4rem, 5vw, 4rem);
       font-weight: 400;
-      color: var(--white);
+      color: var(--text);
       line-height: 1.15;
       max-width: 760px;
       margin-bottom: 1.5rem;
@@ -135,7 +187,7 @@
 
     h1 em {
       font-style: italic;
-      color: var(--gold);
+      color: var(--blue);
     }
 
     .hero-sub {
@@ -152,7 +204,7 @@
     .btn {
       display: inline-block;
       padding: 0.85rem 2rem;
-      border-radius: 3px;
+      border-radius: 4px;
       font-family: 'Arial', sans-serif;
       font-size: 0.85rem;
       letter-spacing: 0.1em;
@@ -163,33 +215,33 @@
     }
 
     .btn-primary {
-      background: var(--gold);
-      color: var(--navy);
-      border: 2px solid var(--gold);
+      background: var(--blue);
+      color: var(--white);
+      border: 2px solid var(--blue);
       font-weight: 700;
     }
 
-    .btn-primary:hover { background: #e0bb5a; border-color: #e0bb5a; }
+    .btn-primary:hover { background: var(--blue-dark); border-color: var(--blue-dark); }
 
     .btn-outline {
       background: transparent;
-      color: var(--white);
-      border: 2px solid rgba(255,255,255,0.25);
+      color: var(--blue);
+      border: 2px solid var(--blue);
     }
 
-    .btn-outline:hover { border-color: var(--gold); color: var(--gold); }
+    .btn-outline:hover { background: var(--blue-light); }
 
     .divider {
       width: 60px;
       height: 2px;
-      background: var(--gold);
+      background: var(--blue);
       margin: 0 auto 1.5rem;
     }
 
     /* ── Pillars ── */
     .pillars {
       padding: 6rem 4rem;
-      background: #06111f;
+      background: var(--offwhite);
     }
 
     .section-header {
@@ -202,14 +254,14 @@
       font-size: 0.7rem;
       letter-spacing: 0.3em;
       text-transform: uppercase;
-      color: var(--gold);
+      color: var(--blue);
       margin-bottom: 0.75rem;
     }
 
     .section-header h2 {
       font-size: clamp(1.6rem, 3vw, 2.4rem);
       font-weight: 400;
-      color: var(--white);
+      color: var(--text);
     }
 
     .cards {
@@ -221,16 +273,17 @@
     }
 
     .card {
-      background: rgba(26,61,107,0.18);
-      border: 1px solid rgba(201,168,76,0.15);
-      border-radius: 6px;
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 8px;
       padding: 2.25rem 2rem;
-      transition: border-color 0.25s, transform 0.25s;
+      transition: border-color 0.25s, transform 0.25s, box-shadow 0.25s;
     }
 
     .card:hover {
-      border-color: rgba(201,168,76,0.5);
+      border-color: var(--blue);
       transform: translateY(-4px);
+      box-shadow: 0 8px 24px rgba(26,86,219,0.1);
     }
 
     .card-icon {
@@ -240,7 +293,7 @@
 
     .card h3 {
       font-size: 1.1rem;
-      color: var(--white);
+      color: var(--text);
       margin-bottom: 0.75rem;
       font-weight: 400;
       letter-spacing: 0.02em;
@@ -256,8 +309,6 @@
     /* ── Stats bar ── */
     .stats {
       background: var(--blue);
-      border-top: 1px solid rgba(201,168,76,0.2);
-      border-bottom: 1px solid rgba(201,168,76,0.2);
       padding: 3.5rem 4rem;
       display: flex;
       justify-content: center;
@@ -269,7 +320,7 @@
 
     .stat-number {
       font-size: 2.4rem;
-      color: var(--gold);
+      color: var(--white);
       display: block;
       margin-bottom: 0.3rem;
     }
@@ -279,20 +330,21 @@
       font-size: 0.75rem;
       letter-spacing: 0.15em;
       text-transform: uppercase;
-      color: var(--muted);
+      color: rgba(255,255,255,0.7);
     }
 
     /* ── CTA ── */
     .cta {
       padding: 7rem 2rem;
       text-align: center;
-      background: linear-gradient(180deg, #06111f 0%, #0b1f3a 100%);
+      background: var(--white);
+      border-top: 1px solid var(--border);
     }
 
     .cta h2 {
       font-size: clamp(1.8rem, 3.5vw, 2.8rem);
       font-weight: 400;
-      color: var(--white);
+      color: var(--text);
       margin-bottom: 1rem;
       max-width: 600px;
       margin-left: auto;
@@ -307,14 +359,14 @@
 
     /* ── Footer ── */
     footer {
-      background: #040d18;
+      background: var(--offwhite);
       padding: 2.5rem 4rem;
       display: flex;
       align-items: center;
       justify-content: space-between;
       flex-wrap: wrap;
       gap: 1rem;
-      border-top: 1px solid rgba(255,255,255,0.05);
+      border-top: 1px solid var(--border);
     }
 
     .footer-copy {
@@ -326,7 +378,7 @@
     .footer-note {
       font-family: 'Arial', sans-serif;
       font-size: 0.75rem;
-      color: rgba(138,154,184,0.5);
+      color: #94a3b8;
       max-width: 480px;
       text-align: right;
       line-height: 1.5;
@@ -348,15 +400,23 @@
   <nav>
     <a href="#" class="nav-logo">
       <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <polygon points="14,2 18,10 27,11 21,17 23,26 14,21 5,26 7,17 1,11 10,10" fill="none" stroke="#c9a84c" stroke-width="1.5" stroke-linejoin="round"/>
-        <circle cx="14" cy="14" r="3" fill="#c9a84c"/>
+        <polygon points="14,2 18,10 27,11 21,17 23,26 14,21 5,26 7,17 1,11 10,10" fill="none" stroke="#1a56db" stroke-width="1.5" stroke-linejoin="round"/>
+        <circle cx="14" cy="14" r="3" fill="#1a56db"/>
       </svg>
       <span class="nav-logo-text">Lighthouse <span>Capital</span> Research</span>
     </a>
     <ul>
-      <li><a href="#approach">Approach</a></li>
-      <li><a href="#focus">Focus Areas</a></li>
-      <li><a href="#contact">Contact</a></li>
+      <li><a href="index.html#approach">Approach</a></li>
+      <li><a href="index.html#focus">Focus Areas</a></li>
+      <li class="nav-dropdown">
+        <a href="equity-research/index.html">Equity Research</a>
+        <div class="dropdown-menu">
+          <div class="dropdown-menu-inner">
+            <a href="equity-research/okta.html">Okta (OKTA)</a>
+          </div>
+        </div>
+      </li>
+      <li><a href="index.html#contact">Contact</a></li>
     </ul>
   </nav>
 
@@ -365,18 +425,18 @@
     <div class="beacon">
       <svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
         <!-- Lighthouse beam rays -->
-        <line x1="40" y1="30" x2="10" y2="5"  stroke="#c9a84c" stroke-width="1" opacity="0.4"/>
-        <line x1="40" y1="30" x2="40" y2="2"  stroke="#c9a84c" stroke-width="1" opacity="0.6"/>
-        <line x1="40" y1="30" x2="70" y2="5"  stroke="#c9a84c" stroke-width="1" opacity="0.4"/>
+        <line x1="40" y1="30" x2="10" y2="5"  stroke="#1a56db" stroke-width="1" opacity="0.4"/>
+        <line x1="40" y1="30" x2="40" y2="2"  stroke="#1a56db" stroke-width="1" opacity="0.6"/>
+        <line x1="40" y1="30" x2="70" y2="5"  stroke="#1a56db" stroke-width="1" opacity="0.4"/>
         <!-- Tower -->
-        <rect x="34" y="30" width="12" height="30" rx="1" fill="#c9a84c" opacity="0.9"/>
-        <rect x="30" y="58" width="20" height="5"  rx="1" fill="#c9a84c"/>
+        <rect x="34" y="30" width="12" height="30" rx="1" fill="#1a56db" opacity="0.9"/>
+        <rect x="30" y="58" width="20" height="5"  rx="1" fill="#1a56db"/>
         <!-- Light housing -->
-        <rect x="31" y="22" width="18" height="10" rx="2" fill="#c9a84c"/>
-        <circle cx="40" cy="27" r="4" fill="#0b1f3a"/>
-        <circle cx="40" cy="27" r="2" fill="#f0d080"/>
+        <rect x="31" y="22" width="18" height="10" rx="2" fill="#1a56db"/>
+        <circle cx="40" cy="27" r="4" fill="#ffffff"/>
+        <circle cx="40" cy="27" r="2" fill="#93c5fd"/>
         <!-- Base -->
-        <rect x="26" y="63" width="28" height="4" rx="1" fill="#c9a84c" opacity="0.6"/>
+        <rect x="26" y="63" width="28" height="4" rx="1" fill="#1a56db" opacity="0.6"/>
       </svg>
     </div>
     <p class="hero-eyebrow">Independent · Rigorous · Insightful</p>
@@ -433,7 +493,7 @@
   </section>
 
   <!-- Focus Areas -->
-  <section class="pillars" id="focus" style="background: #0b1f3a;">
+  <section class="pillars" id="focus" style="background: var(--white);">
     <div class="section-header">
       <p class="section-eyebrow">Coverage Universe</p>
       <div class="divider"></div>
@@ -442,13 +502,13 @@
     <div class="cards">
       <div class="card">
         <div class="card-icon">💼</div>
-        <h3>Small &amp; Mid-Cap Equities</h3>
+        <h3>Small through Large-Cap Equities</h3>
         <p>Underanalyzed companies where independent research creates genuine informational edge and alpha potential.</p>
       </div>
       <div class="card">
-        <div class="card-icon">🏗️</div>
-        <h3>Special Situations</h3>
-        <p>Spin-offs, restructurings, and corporate events that create temporary dislocations between price and intrinsic value.</p>
+        <div class="card-icon">⚖️</div>
+        <h3>Private Credit Markets</h3>
+        <p>Complex deals where junior and senior debt structures create unique investment opportunities.</p>
       </div>
       <div class="card">
         <div class="card-icon">🌐</div>

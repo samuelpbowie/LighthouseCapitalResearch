@@ -1,0 +1,1154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Okta (OKTA) — Lighthouse Capital Research</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --blue:       #1a56db; --blue-dark: #1240a8; --blue-light: #e8f0fe;
+      --white:      #ffffff; --offwhite: #f7f9fc;
+      --text:       #1e293b; --muted: #64748b; --border: #e2e8f0;
+      --green:      #16a34a; --red: #dc2626; --indigo: #6366f1;
+    }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Georgia', serif; background: var(--white); color: var(--text); min-height: 100vh; }
+
+    /* Nav */
+    nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 1.2rem 4rem; background: rgba(255,255,255,0.95); backdrop-filter: blur(8px); border-bottom: 1px solid var(--border); box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
+    .nav-logo { display: flex; align-items: center; gap: 0.75rem; text-decoration: none; }
+    .nav-logo-text { font-size: 1.05rem; letter-spacing: 0.06em; color: var(--text); text-transform: uppercase; }
+    .nav-logo-text span { color: var(--blue); }
+    nav ul { list-style: none; display: flex; gap: 2.5rem; }
+    nav ul a { color: var(--muted); text-decoration: none; font-family: 'Arial', sans-serif; font-size: 0.85rem; letter-spacing: 0.08em; text-transform: uppercase; transition: color 0.2s; }
+    nav ul a:hover { color: var(--blue); }
+    .nav-dropdown { position: relative; }
+    .nav-dropdown > a { display: flex; align-items: center; gap: 0.3rem; }
+    .nav-dropdown > a::after { content: '▾'; font-size: 0.7rem; transition: transform 0.2s; }
+    .nav-dropdown:hover > a::after { transform: rotate(180deg); }
+    .dropdown-menu { display: none; position: absolute; top: 100%; left: 50%; transform: translateX(-50%); padding-top: 0.75rem; min-width: 180px; }
+    .dropdown-menu-inner { background: var(--white); border: 1px solid var(--border); border-radius: 6px; box-shadow: 0 8px 24px rgba(0,0,0,0.1); overflow: hidden; }
+    .nav-dropdown:hover .dropdown-menu { display: block; }
+    .dropdown-menu a { display: block; padding: 0.7rem 1.25rem; color: var(--text) !important; text-transform: none !important; letter-spacing: 0.02em !important; font-size: 0.875rem !important; border-bottom: 1px solid var(--border); }
+    .dropdown-menu a:last-child { border-bottom: none; }
+    .dropdown-menu a:hover { background: var(--blue-light); color: var(--blue) !important; }
+
+    /* Page header */
+    .page-header { margin-top: 68px; padding: 4rem 4rem 3rem; background: linear-gradient(135deg,#f0f5ff 0%,var(--white) 60%); border-bottom: 1px solid var(--border); }
+    .breadcrumb { font-family: 'Arial', sans-serif; font-size: 0.8rem; color: var(--muted); margin-bottom: 1.25rem; }
+    .breadcrumb a { color: var(--blue); text-decoration: none; }
+    .breadcrumb a:hover { text-decoration: underline; }
+    .breadcrumb span { margin: 0 0.4rem; }
+    .ticker-row { display: flex; align-items: baseline; gap: 1.25rem; flex-wrap: wrap; margin-bottom: 0.5rem; }
+    .ticker-row h1 { font-size: 2.2rem; font-weight: 400; color: var(--text); }
+    .ticker-badge { font-family: 'Arial', sans-serif; font-size: 0.8rem; font-weight: 700; letter-spacing: 0.12em; background: var(--blue-light); color: var(--blue); padding: 0.25rem 0.65rem; border-radius: 4px; }
+    .company-desc { font-family: 'Arial', sans-serif; font-size: 1rem; color: var(--muted); margin-top: 0.4rem; max-width: 620px; line-height: 1.6; }
+    .meta-row { display: flex; gap: 2.5rem; margin-top: 2rem; flex-wrap: wrap; }
+    .meta-item label { display: block; font-family: 'Arial', sans-serif; font-size: 0.7rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.25rem; }
+    .meta-item .value { font-family: 'Arial', sans-serif; font-size: 1rem; font-weight: 600; color: var(--text); }
+    .value.positive { color: var(--green); }
+
+    /* Layout */
+    .content-wrap { max-width: 1200px; margin: 0 auto; padding: 3rem 4rem 6rem; display: grid; grid-template-columns: 1fr 320px; gap: 3rem; align-items: start; }
+    .section { margin-bottom: 3rem; }
+    .section-title { font-size: 1.15rem; font-weight: 400; color: var(--text); padding-bottom: 0.6rem; border-bottom: 2px solid var(--blue); margin-bottom: 1.5rem; }
+    .prose p { font-family: 'Arial', sans-serif; font-size: 0.95rem; color: #334155; line-height: 1.8; margin-bottom: 1rem; }
+    .prose p:last-child { margin-bottom: 0; }
+
+    /* Scenario toggle */
+    .scenario-bar { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
+    .scenario-bar label { font-family: 'Arial', sans-serif; font-size: 0.7rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); margin-right: 0.25rem; }
+    .scenario-btn { font-family: 'Arial', sans-serif; font-size: 0.8rem; font-weight: 600; padding: 0.4rem 1.1rem; border-radius: 4px; border: 1.5px solid var(--border); background: var(--white); color: var(--muted); cursor: pointer; transition: all 0.15s; }
+    .scenario-btn:hover { border-color: var(--blue); color: var(--blue); }
+    .scenario-btn.active[data-scenario="Weighted Average"] { background: var(--indigo); border-color: var(--indigo); color: #fff; }
+    .scenario-btn.active[data-scenario="Base"]        { background: var(--blue);  border-color: var(--blue);  color: #fff; }
+    .scenario-btn.active[data-scenario="Pessimistic"] { background: var(--red);   border-color: var(--red);   color: #fff; }
+    .scenario-btn.active[data-scenario="Optimistic"]  { background: var(--green); border-color: var(--green); color: #fff; }
+
+    /* Charts */
+    .chart-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+    .chart-card { background: var(--offwhite); border: 1px solid var(--border); border-radius: 8px; padding: 1.5rem; }
+    .chart-card h4 { font-family: 'Arial', sans-serif; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); margin-bottom: 1rem; }
+    .chart-card canvas { max-height: 220px; }
+    .chart-card.wide { grid-column: 1 / -1; }
+    .chart-card.wide canvas { max-height: 240px; }
+
+    /* Bull/Bear */
+    .thesis-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; }
+    .thesis-box { border-radius: 6px; padding: 1.5rem; border: 1px solid; }
+    .thesis-box.bull { background: #f0fdf4; border-color: #bbf7d0; }
+    .thesis-box.bear { background: #fff1f2; border-color: #fecdd3; }
+    .thesis-box h4 { font-family: 'Arial', sans-serif; font-size: 0.8rem; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 1rem; }
+    .thesis-box.bull h4 { color: var(--green); }
+    .thesis-box.bear h4 { color: var(--red); }
+    .thesis-box ul { list-style: none; }
+    .thesis-box ul li { font-family: 'Arial', sans-serif; font-size: 0.875rem; color: #334155; line-height: 1.6; padding: 0.4rem 0 0.4rem 1.1rem; border-bottom: 1px solid rgba(0,0,0,0.05); position: relative; }
+    .thesis-box ul li:last-child { border-bottom: none; }
+    .thesis-box.bull li::before { content: '+'; position: absolute; left: 0; color: var(--green); font-weight: 700; }
+    .thesis-box.bear li::before { content: '−'; position: absolute; left: 0; color: var(--red); font-weight: 700; }
+
+    /* KPI table */
+    .kpi-table { width: 100%; border-collapse: collapse; font-family: 'Arial', sans-serif; font-size: 0.875rem; }
+    .kpi-table thead th { text-align: left; padding: 0.6rem 0.75rem; font-size: 0.7rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); border-bottom: 1px solid var(--border); }
+    .kpi-table thead th:not(:first-child) { text-align: right; }
+    .kpi-table thead th.proj { color: var(--blue); }
+    .kpi-table tbody td { padding: 0.65rem 0.75rem; border-bottom: 1px solid var(--border); color: #334155; }
+    .kpi-table tbody td:not(:first-child) { text-align: right; font-variant-numeric: tabular-nums; }
+    .kpi-table tbody tr:hover td { background: var(--offwhite); }
+    .proj-val { color: var(--blue); font-style: italic; }
+    .table-note { font-family: 'Arial', sans-serif; font-size: 0.75rem; color: #94a3b8; margin-top: 0.75rem; }
+
+    /* DCF summary cards */
+    .dcf-wa-row { margin-bottom: 1rem; }
+    .dcf-summary { display: grid; grid-template-columns: repeat(3,1fr); gap: 1rem; margin-bottom: 1.5rem; }
+    .dcf-card { border-radius: 8px; padding: 1.25rem 1rem; text-align: center; border: 1.5px solid; }
+    .dcf-card.weighted    { border-color: rgba(99,102,241,0.4); background: #f5f3ff; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1.5rem; padding: 1.5rem 2rem; text-align: left; }
+    .dcf-card.base        { border-color: rgba(26,86,219,0.3);  background: #eff6ff; }
+    .dcf-card.pessimistic { border-color: rgba(220,38,38,0.25); background: #fff1f2; }
+    .dcf-card.optimistic  { border-color: rgba(22,163,74,0.3);  background: #f0fdf4; }
+    .dcf-card .dcf-label  { font-family: 'Arial', sans-serif; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 0.4rem; }
+    .weighted .dcf-label { color: var(--indigo); }
+    .base .dcf-label        { color: var(--blue); }
+    .pessimistic .dcf-label { color: var(--red); }
+    .optimistic .dcf-label  { color: var(--green); }
+    .dcf-card .dcf-price  { font-size: 2rem; font-weight: 700; font-family: 'Arial', sans-serif; color: var(--text); }
+    .dcf-card.weighted .dcf-price { font-size: 2.6rem; }
+    .dcf-card .dcf-updown { font-family: 'Arial', sans-serif; font-size: 0.8rem; font-weight: 600; margin-top: 0.2rem; }
+    .dcf-card .dcf-sub    { font-family: 'Arial', sans-serif; font-size: 0.72rem; color: var(--muted); margin-top: 0.15rem; }
+    .dcf-wa-meta { display: flex; flex-direction: column; gap: 0.25rem; font-family: 'Arial', sans-serif; font-size: 0.8rem; color: var(--muted); }
+
+    /* DCF Sensitivity table */
+    .sensitivity-tabs { display: flex; gap: 0.5rem; margin-bottom: 1rem; }
+    .sens-tab { font-family: 'Arial', sans-serif; font-size: 0.78rem; font-weight: 600; padding: 0.35rem 0.9rem; border-radius: 4px; border: 1.5px solid var(--border); background: var(--white); color: var(--muted); cursor: pointer; transition: all 0.15s; }
+    .sens-tab.active[data-tab="Weighted Average"] { background: var(--indigo); border-color: var(--indigo); color: #fff; }
+    .sens-tab.active[data-tab="Base"]        { background: var(--blue);  border-color: var(--blue);  color: #fff; }
+    .sens-tab.active[data-tab="Pessimistic"] { background: var(--red);   border-color: var(--red);   color: #fff; }
+    .sens-tab.active[data-tab="Optimistic"]  { background: var(--green); border-color: var(--green); color: #fff; }
+
+    .sensitivity-wrap { overflow-x: auto; }
+    .sensitivity-table { width: 100%; border-collapse: collapse; font-family: 'Arial', sans-serif; font-size: 0.78rem; white-space: nowrap; }
+    .sensitivity-table th { padding: 0.5rem 0.6rem; font-size: 0.68rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); border-bottom: 1px solid var(--border); text-align: center; }
+    .sensitivity-table th.row-header { text-align: left; }
+    .sensitivity-table td { padding: 0.45rem 0.6rem; text-align: center; border-bottom: 1px solid rgba(226,232,240,0.5); font-variant-numeric: tabular-nums; transition: opacity 0.15s; }
+    .sensitivity-table td.tgr-label { text-align: left; color: var(--muted); font-size: 0.72rem; background: var(--offwhite); }
+    .sensitivity-table tr:hover td { filter: brightness(0.93); }
+    /* Cell shading — set via inline style background */
+    .sens-cell { border-radius: 3px; }
+
+    .sens-legend { display: flex; align-items: center; gap: 1rem; margin-top: 0.75rem; font-family: 'Arial', sans-serif; font-size: 0.72rem; color: var(--muted); flex-wrap: wrap; }
+    .sens-legend-item { display: flex; align-items: center; gap: 0.35rem; }
+    .sens-swatch { width: 14px; height: 14px; border-radius: 2px; }
+    .current-price-badge { display: inline-flex; align-items: center; gap: 0.3rem; background: #1e293b; color: #fff; font-family: 'Arial', sans-serif; font-size: 0.72rem; font-weight: 600; padding: 0.2rem 0.55rem; border-radius: 12px; margin-left: 0.5rem; }
+
+    /* Sidebar */
+    .sidebar { position: sticky; top: 100px; }
+    .sidebar-card { background: var(--offwhite); border: 1px solid var(--border); border-radius: 8px; padding: 1.75rem; margin-bottom: 1.5rem; }
+    .sidebar-card h3 { font-size: 0.8rem; font-family: 'Arial', sans-serif; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); margin-bottom: 1.25rem; }
+    .rating-badge { display: inline-block; padding: 0.5rem 1.25rem; border-radius: 4px; font-family: 'Arial', sans-serif; font-weight: 700; font-size: 1rem; letter-spacing: 0.1em; background: var(--blue); color: var(--white); margin-bottom: 1rem; }
+    .sidebar-stat { display: flex; justify-content: space-between; align-items: baseline; padding: 0.55rem 0; border-bottom: 1px solid var(--border); font-family: 'Arial', sans-serif; font-size: 0.875rem; }
+    .sidebar-stat:last-child { border-bottom: none; }
+    .sidebar-stat .s-label { color: var(--muted); }
+    .sidebar-stat .s-value { font-weight: 600; color: var(--text); }
+    .download-btn { display: flex; align-items: center; justify-content: center; gap: 0.5rem; width: 100%; padding: 0.85rem 1.25rem; background: var(--blue); color: var(--white); border: none; border-radius: 4px; font-family: 'Arial', sans-serif; font-size: 0.85rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; text-decoration: none; transition: background 0.2s; }
+    .download-btn:hover { background: var(--blue-dark); }
+    .disclaimer { font-family: 'Arial', sans-serif; font-size: 0.75rem; color: #94a3b8; line-height: 1.6; margin-top: 0.75rem; text-align: center; }
+
+    /* Football field */
+    .ff-legend { display: flex; flex-wrap: wrap; gap: 0.75rem 1.5rem; margin-top: 1rem; font-family: 'Arial', sans-serif; font-size: 0.75rem; color: var(--muted); }
+    .ff-legend-item { display: flex; align-items: center; gap: 0.4rem; }
+    .ff-swatch { width: 14px; height: 10px; border-radius: 2px; flex-shrink: 0; }
+    .ff-note { font-family: 'Arial', sans-serif; font-size: 0.72rem; color: #94a3b8; margin-top: 0.75rem; }
+
+    /* Footer */
+    footer { background: var(--offwhite); padding: 2.5rem 4rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; border-top: 1px solid var(--border); }
+    .footer-copy { font-family: 'Arial', sans-serif; font-size: 0.8rem; color: var(--muted); }
+    .footer-note { font-family: 'Arial', sans-serif; font-size: 0.75rem; color: #94a3b8; max-width: 480px; text-align: right; line-height: 1.5; }
+
+    @media (max-width: 900px) {
+      .content-wrap { grid-template-columns: 1fr; padding: 2rem 1.5rem 4rem; }
+      .thesis-grid, .chart-grid, .dcf-summary { grid-template-columns: 1fr; }
+      .dcf-card.weighted { flex-direction: column; gap: 0.5rem; }
+      .chart-card.wide { grid-column: auto; }
+      .page-header { padding: 3rem 1.5rem 2rem; }
+      nav { padding: 1rem 1.5rem; } nav ul { display: none; }
+      footer { flex-direction: column; text-align: center; } .footer-note { text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a href="../index.html" class="nav-logo">
+      <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+        <polygon points="14,2 18,10 27,11 21,17 23,26 14,21 5,26 7,17 1,11 10,10" fill="none" stroke="#1a56db" stroke-width="1.5" stroke-linejoin="round"/>
+        <circle cx="14" cy="14" r="3" fill="#1a56db"/>
+      </svg>
+      <span class="nav-logo-text">Lighthouse <span>Capital</span> Research</span>
+    </a>
+    <ul>
+      <li><a href="../index.html#approach">Approach</a></li>
+      <li><a href="../index.html#focus">Focus Areas</a></li>
+      <li class="nav-dropdown">
+        <a href="index.html">Equity Research</a>
+        <div class="dropdown-menu"><div class="dropdown-menu-inner">
+          <a href="okta.html">Okta (OKTA)</a>
+        </div></div>
+      </li>
+      <li><a href="../index.html#contact">Contact</a></li>
+    </ul>
+  </nav>
+
+  <div class="page-header">
+    <div class="breadcrumb">
+      <a href="../index.html">Home</a><span>›</span>
+      <a href="index.html">Equity Research</a><span>›</span>Okta
+    </div>
+    <div class="ticker-row">
+      <h1>Okta, Inc.</h1>
+      <span class="ticker-badge">NASDAQ: OKTA</span>
+    </div>
+    <p class="company-desc">Identity and access management platform providing cloud-based workforce and customer identity solutions.</p>
+    <div class="meta-row">
+      <div class="meta-item"><label>Sector</label><span class="value">Information Technology</span></div>
+      <div class="meta-item"><label>Industry</label><span class="value">Identity &amp; Access Management</span></div>
+      <div class="meta-item"><label>Report Date</label><span class="value">March 2026</span></div>
+      <div class="meta-item"><label>Coverage</label><span class="value positive">Active</span></div>
+    </div>
+  </div>
+
+  <div class="content-wrap">
+    <main>
+
+      <div class="section">
+        <h2 class="section-title">Investment Thesis</h2>
+        <div class="prose">
+          <p>Okta is the independent identity platform of record for the enterprise. In a world where the perimeter has dissolved and identity has become the new security boundary, Okta sits at a structurally advantaged position — deeply embedded in customer IT stacks with high switching costs, expanding wallet share through Customer Identity Cloud (Auth0), and benefiting from secular tailwinds in zero-trust security adoption.</p>
+          <p>After a turbulent period marked by the Auth0 integration and the 2023 security incident, Okta has stabilized its go-to-market and is executing on a path toward durable free cash flow generation. We believe the market continues to overly discount near-term growth deceleration while underappreciating the long-term platform stickiness and Rule of 40 trajectory.</p>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2 class="section-title">Bull vs. Bear</h2>
+        <div class="thesis-grid">
+          <div class="thesis-box bull">
+            <h4>Bull Case</h4>
+            <ul>
+              <li>Best-of-breed independent identity — not tied to a hyperscaler</li>
+              <li>Customer Identity (Auth0) represents underpenetrated second vector</li>
+              <li>Zero-trust mandates accelerate enterprise IAM spending</li>
+              <li>Durable net revenue retention as customers expand seats and modules</li>
+              <li>Significant operating leverage as growth stabilizes</li>
+            </ul>
+          </div>
+          <div class="thesis-box bear">
+            <h4>Bear Case</h4>
+            <ul>
+              <li>Microsoft Entra bundling pressure in Windows-heavy enterprises</li>
+              <li>Brand damage from 2023 security incident lingers in sales cycles</li>
+              <li>Growth deceleration compresses multiple further</li>
+              <li>Intensifying competition from CyberArk, Ping, and hyperscalers</li>
+              <li>Path to GAAP profitability remains multi-year</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Financial Model ── -->
+      <div class="section" id="model-section">
+        <h2 class="section-title">Financial Model <span id="model-generated" style="font-size:0.72rem;color:var(--muted);font-weight:400;margin-left:0.5rem;font-style:italic;"></span></h2>
+        <div id="model-loading" style="font-family:Arial,sans-serif;font-size:0.9rem;color:var(--muted);padding:2rem 0;">Loading model data…</div>
+
+        <div id="model-content" style="display:none;">
+          <div class="scenario-bar">
+            <label>Scenario:</label>
+            <button class="scenario-btn active" data-scenario="Weighted Average">Wtd Avg</button>
+            <button class="scenario-btn" data-scenario="Base">Base</button>
+            <button class="scenario-btn" data-scenario="Pessimistic">Bear</button>
+            <button class="scenario-btn" data-scenario="Optimistic">Bull</button>
+          </div>
+
+          <div class="chart-grid" style="margin-bottom:1.5rem;">
+            <div class="chart-card wide"><h4>Revenue ($M)</h4><canvas id="revenueChart"></canvas></div>
+            <div class="chart-card"><h4>EBITDA ($M)</h4><canvas id="ebitdaChart"></canvas></div>
+            <div class="chart-card"><h4>EBITDA Margin (%)</h4><canvas id="marginChart"></canvas></div>
+            <div class="chart-card"><h4>Free Cash Flow ($M)</h4><canvas id="fcfChart"></canvas></div>
+            <div class="chart-card"><h4>EPS (Basic)</h4><canvas id="epsChart"></canvas></div>
+          </div>
+
+          <!-- KPI Table -->
+          <h3 style="font-size:1rem;font-weight:400;color:var(--text);margin-bottom:1rem;" id="kpi-table-heading">Key Metrics — <span id="kpi-scenario-label">Base Case</span></h3>
+          <div style="overflow-x:auto;">
+            <table class="kpi-table" id="kpiTable"></table>
+          </div>
+          <p class="table-note" id="kpi-note"></p>
+        </div>
+      </div>
+
+      <!-- ── DCF Valuation ── -->
+      <div class="section" id="dcf-section">
+        <h2 class="section-title">DCF Valuation</h2>
+        <div id="dcf-loading" style="font-family:Arial,sans-serif;font-size:0.9rem;color:var(--muted);padding:1rem 0;">Loading…</div>
+
+        <div id="dcf-content" style="display:none;">
+          <div class="dcf-wa-row" id="dcfWaSummary"></div>
+          <div class="dcf-summary" id="dcfSummary"></div>
+
+          <div class="prose" id="dcf-assumptions-prose"></div>
+
+          <h3 style="font-size:1rem;font-weight:400;color:var(--text);margin:1.75rem 0 0.75rem;">
+            Implied Share Price Sensitivity
+            <span id="current-price-badge" class="current-price-badge"></span>
+          </h3>
+          <p style="font-family:Arial,sans-serif;font-size:0.8rem;color:var(--muted);margin-bottom:1rem;">
+            Rows = Terminal Growth Rate (TGR) &nbsp;·&nbsp; Columns = WACC &nbsp;·&nbsp; Color intensity = % premium / discount to current price
+          </p>
+
+          <div class="sensitivity-tabs">
+            <button class="sens-tab active" data-tab="Weighted Average">Wtd Avg</button>
+            <button class="sens-tab" data-tab="Base">Base</button>
+            <button class="sens-tab" data-tab="Pessimistic">Bear</button>
+            <button class="sens-tab" data-tab="Optimistic">Bull</button>
+          </div>
+          <div class="sensitivity-wrap">
+            <table class="sensitivity-table" id="sensitivityTable"></table>
+          </div>
+          <div class="sens-legend">
+            <span class="sens-legend-item"><span class="sens-swatch" style="background:#dcfce7;border:1px solid #86efac;"></span>&gt;20% upside</span>
+            <span class="sens-legend-item"><span class="sens-swatch" style="background:#bbf7d0;border:1px solid #4ade80;"></span>10–20% upside</span>
+            <span class="sens-legend-item"><span class="sens-swatch" style="background:#f0fdf4;border:1px solid #86efac;"></span>0–10% upside</span>
+            <span class="sens-legend-item"><span class="sens-swatch" style="background:#fff1f2;border:1px solid #fca5a5;"></span>0–10% downside</span>
+            <span class="sens-legend-item"><span class="sens-swatch" style="background:#fecaca;border:1px solid #f87171;"></span>10–20% downside</span>
+            <span class="sens-legend-item"><span class="sens-swatch" style="background:#fca5a5;border:1px solid #ef4444;"></span>&gt;20% downside</span>
+          </div>
+
+          <p class="table-note" style="margin-top:1rem;">All implied prices in USD. See downloadable Excel model for full supporting schedules.</p>
+
+          <!-- Comparable Companies -->
+          <h3 style="font-size:1rem;font-weight:400;color:var(--text);margin:2rem 0 0.75rem;">Comparable Companies</h3>
+          <div style="overflow-x:auto;">
+            <table class="kpi-table" id="compsTable"></table>
+          </div>
+          <p class="table-note" id="comps-note" style="margin-top:0.6rem;"></p>
+        </div>
+      </div>
+
+      <!-- ── Football Field ── -->
+      <div class="section" id="ff-section">
+        <h2 class="section-title">Valuation Football Field</h2>
+        <div id="ff-loading" style="font-family:Arial,sans-serif;font-size:0.9rem;color:var(--muted);padding:1rem 0;">Loading…</div>
+
+        <div id="ff-content" style="display:none;">
+          <p style="font-family:Arial,sans-serif;font-size:0.82rem;color:var(--muted);margin-bottom:1.25rem;line-height:1.6;">
+            Implied share price ranges across valuation methodologies. Bars show the Low–High range; ◆ marks the average. Dashed line = current stock price.
+          </p>
+          <div style="position:relative;height:380px;">
+            <canvas id="footballFieldChart"></canvas>
+          </div>
+          <div class="ff-legend" id="ffLegend"></div>
+          <p class="ff-note">Estimate is a weighted blend: 50% DCF · 25% EBITDA Comps · 15% Forward PE (2027) · 10% Revenue Comps. Revenue Comps range reflects wide peer EV/Revenue dispersion.</p>
+        </div>
+      </div>
+
+      <!-- ── Stock Price ── -->
+      <div class="section" id="price-section">
+        <h2 class="section-title">Market Price — NASDAQ: OKTA</h2>
+        <div id="price-loading" style="font-family:Arial,sans-serif;font-size:0.9rem;color:var(--muted);padding:1rem 0;">Loading price data…</div>
+        <div id="price-content" style="display:none;">
+          <div style="position:relative;height:420px;padding-right:68px;">
+            <canvas id="priceChart"></canvas>
+          </div>
+          <div id="price-legend" class="ff-legend" style="margin-top:0.85rem;"></div>
+          <p style="font-family:Arial,sans-serif;font-size:0.72rem;color:#94a3b8;margin-top:0.5rem;">
+            Daily closing prices, last 18 months. LCR Estimate weights: 50% DCF · 25% EBITDA Comps · 15% Fwd PE · 10% Rev Comps.
+            Data via Yahoo Finance. Updated: <span id="price-updated"></span>
+          </p>
+        </div>
+      </div>
+
+    </main>
+
+    <aside class="sidebar">
+      <div class="sidebar-card">
+        <h3>LCR Rating</h3>
+        <div class="rating-badge">BUY</div>
+        <div class="sidebar-stat"><span class="s-label">Price Target</span><span class="s-value">$90 – $102</span></div>
+        <div class="sidebar-stat"><span class="s-label">Risk Rating</span><span class="s-value">Medium</span></div>
+        <div class="sidebar-stat"><span class="s-label">Time Horizon</span><span class="s-value">18 – 24 months</span></div>
+        <div class="sidebar-stat"><span class="s-label">Last Updated</span><span class="s-value">March 2026</span></div>
+      </div>
+      <div class="sidebar-card" id="dcf-assumptions-card">
+        <h3>Model Assumptions</h3>
+        <div id="assumptions-stats"></div>
+      </div>
+      <div class="sidebar-card">
+        <h3>Financial Model</h3>
+        <a href="../model_files/Okta Model.xlsm" class="download-btn" download>
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 1v9M4 7l4 4 4-4M2 13h12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Download Excel Model
+        </a>
+        <p class="disclaimer">Lighthouse Capital Research proprietary model. For informational use only.</p>
+      </div>
+    </aside>
+  </div>
+
+  <footer>
+    <span class="footer-copy">&copy; 2026 Lighthouse Capital Research. All rights reserved.</span>
+    <span class="footer-note">For informational purposes only. Nothing on this site constitutes investment advice or a solicitation to buy or sell any security.</span>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <script>
+  // ── Helpers ──────────────────────────────────────────────────────────────
+  const fmt  = (v, d=0) => v == null ? '—' : v.toLocaleString('en-US', {minimumFractionDigits:d, maximumFractionDigits:d});
+  const fmtM = (v) => v == null ? '—' : (v < 0 ? `(${fmt(Math.abs(v))})` : fmt(v));
+  const fmtP = (v) => v == null ? '—' : `${v > 0 ? '' : ''}${fmt(v,1)}%`;
+  const fmtE = (v) => v == null ? '—' : (v < 0 ? `(${fmt(Math.abs(v),2)})` : fmt(v,2));
+
+  const COLORS = {
+    hist:              '#94a3b8',
+    'Weighted Average':'#6366f1',
+    Base:              '#1a56db',
+    Pessimistic:       '#dc2626',
+    Optimistic:        '#16a34a',
+  };
+
+  Chart.defaults.font.family = 'Arial, sans-serif';
+  Chart.defaults.font.size   = 11;
+  Chart.defaults.color       = '#64748b';
+
+  let charts = {};
+  let MODEL  = null;
+  let activeSc = 'Weighted Average';
+
+  // ── Build charts ─────────────────────────────────────────────────────────
+  function buildCharts(scenario) {
+    const m = MODEL;
+    const years = m.years;
+    const HIST  = 4; // FY2023–FY2026 are historical (indices 0-3)
+
+    function splitSeries(arr, joinLine) {
+      const hist = arr.map((v,i) => i < HIST ? v : null);
+      const proj = arr.map((v,i) => i < HIST ? null : v);
+      if (joinLine) {
+        // Share one point at the boundary so the line connects visually
+        if (arr[HIST]   != null) hist[HIST]   = arr[HIST];
+        if (arr[HIST-1] != null) proj[HIST-1] = arr[HIST-1];
+      }
+      return [hist, proj];
+    }
+
+    function barChart(id, arrFull, yLabel, isNeg) {
+      if (charts[id]) charts[id].destroy();
+      const [hist, proj] = splitSeries(arrFull, false);
+      charts[id] = new Chart(document.getElementById(id).getContext('2d'), {
+        type: 'bar',
+        data: {
+          labels: years,
+          datasets: [
+            { label:'Historical', data: hist, backgroundColor:'rgba(148,163,184,0.7)', borderColor:'#64748b', borderWidth:1 },
+            { label: scenario,    data: proj, backgroundColor: hexAlpha(COLORS[scenario], 0.75), borderColor: COLORS[scenario], borderWidth:1 },
+          ],
+        },
+        options: {
+          responsive:true, maintainAspectRatio:true,
+          plugins:{ legend:{ display:false } },
+          scales:{
+            x:{ grid:{ display:false }, ticks:{ maxRotation:45 } },
+            y:{ grid:{ color:'rgba(0,0,0,0.04)' }, ticks:{ callback: v => Math.abs(v)>=1000 ? (v/1000).toFixed(1)+'B' : v } },
+          },
+        },
+      });
+    }
+
+    function lineChart(id, arrFull, isPercent) {
+      if (charts[id]) charts[id].destroy();
+      const [hist, proj] = splitSeries(arrFull, true);
+      charts[id] = new Chart(document.getElementById(id).getContext('2d'), {
+        type: 'line',
+        data: {
+          labels: years,
+          datasets: [
+            { label:'Historical', data:hist, borderColor:'#94a3b8', backgroundColor:'transparent', borderWidth:2, pointRadius:3, spanGaps:false },
+            { label:scenario,     data:proj, borderColor:COLORS[scenario], backgroundColor:'transparent', borderWidth:2, pointRadius:3, borderDash:[4,3], spanGaps:false },
+          ],
+        },
+        options: {
+          responsive:true, maintainAspectRatio:true,
+          plugins:{ legend:{ display:false } },
+          scales:{
+            x:{ grid:{display:false}, ticks:{maxRotation:45} },
+            y:{ grid:{color:'rgba(0,0,0,0.04)'}, ticks:{ callback: v => isPercent ? v+'%' : v } },
+          },
+        },
+      });
+    }
+
+    const rev = MODEL.metrics.Revenue[scenario];
+    const ebt = MODEL.metrics.EBITDA[scenario];
+    const marg= MODEL.metrics.EBITDAMargin[scenario];
+    const fcf = MODEL.metrics.FCF[scenario];
+    const eps = MODEL.metrics.EPS[scenario];
+
+    barChart('revenueChart', rev,  'Revenue ($M)');
+    barChart('ebitdaChart',  ebt,  'EBITDA ($M)');
+    lineChart('marginChart', marg, true);
+    barChart('fcfChart',     fcf,  'FCF ($M)');
+    barChart('epsChart',     eps,  'EPS');
+  }
+
+  function hexAlpha(hex, alpha) {
+    const r = parseInt(hex.slice(1,3),16);
+    const g = parseInt(hex.slice(3,5),16);
+    const b = parseInt(hex.slice(5,7),16);
+    return `rgba(${r},${g},${b},${alpha})`;
+  }
+
+  // ── KPI Table ─────────────────────────────────────────────────────────────
+  function buildKpiTable(scenario) {
+    const m = MODEL;
+    const yrs = m.years;
+    const HIST = 4;
+
+    const rows = [
+      { label:'Revenue ($M)',     vals: m.metrics.Revenue[scenario],      fmt: fmtM },
+      { label:'Revenue Growth',   vals: m.metrics.RevenueCagr[scenario],  fmt: fmtP },
+      { label:'Gross Profit ($M)',vals: m.incomeStatement.GrossProfit[scenario], fmt: fmtM },
+      { label:'Gross Margin',     vals: m.incomeStatement.GrossMargin[scenario], fmt: v => v==null?'—':v.toFixed(1)+'%' },
+      { label:'EBITDA ($M)',      vals: m.metrics.EBITDA[scenario],       fmt: fmtM },
+      { label:'EBITDA Margin',    vals: m.metrics.EBITDAMargin[scenario], fmt: fmtP },
+      { label:'FCF ($M)',         vals: m.metrics.FCF[scenario],          fmt: fmtM },
+      { label:'FCF Margin',       vals: m.metrics.FCFMargin[scenario],    fmt: fmtP },
+      { label:'EPS (Basic)',      vals: m.metrics.EPS[scenario],          fmt: fmtE },
+    ];
+
+    const thead = `<thead><tr>
+      <th>Metric</th>
+      ${yrs.map((y,i) => `<th class="${i>=HIST?'proj':''}">${y}</th>`).join('')}
+    </tr></thead>`;
+
+    const tbody = '<tbody>' + rows.map(row => {
+      const cells = (row.vals || []).map((v,i) => {
+        const cls = i >= HIST ? 'proj-val' : '';
+        return `<td class="${cls}">${row.fmt(v)}</td>`;
+      }).join('');
+      return `<tr><td>${row.label}</td>${cells}</tr>`;
+    }).join('') + '</tbody>';
+
+    document.getElementById('kpiTable').innerHTML = thead + tbody;
+    document.getElementById('kpi-scenario-label').textContent =
+      scenario === 'Weighted Average' ? 'Weighted Average' :
+      scenario === 'Base' ? 'Base Case' :
+      scenario === 'Pessimistic' ? 'Bear Case' : 'Bull Case';
+
+    const gen = new Date(m.generatedAt);
+    document.getElementById('kpi-note').textContent =
+      `E = Lighthouse Capital Research estimates (${scenario} scenario). `+
+      `Model data as of ${gen.toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'})}.`;
+  }
+
+  // ── DCF Section ───────────────────────────────────────────────────────────
+  function buildDcfSection() {
+    const d = MODEL.dcf;
+    const cp = MODEL.currentPrice;
+
+    // Weighted Average featured card
+    const waPrice = d.impliedPrices['Weighted Average'];
+    const waEv    = d.enterpriseValue['Weighted Average'];
+    const waPct   = (cp && waPrice) ? ((waPrice - cp) / cp * 100) : null;
+    const waUpdown = waPct != null
+      ? `<div class="dcf-updown" style="color:${waPct>=0?'var(--green)':'var(--red)'};">${waPct>=0?'▲':'▼'} ${Math.abs(waPct).toFixed(1)}% vs current</div>`
+      : '';
+    document.getElementById('dcfWaSummary').innerHTML = `
+      <div class="dcf-card weighted">
+        <div>
+          <div class="dcf-label">Weighted Average</div>
+          <div class="dcf-price">$${waPrice != null ? waPrice.toFixed(2) : '—'}</div>
+          ${waUpdown}
+        </div>
+        <div class="dcf-wa-meta">
+          <span>50% Base · 15% Bear · 35% Bull</span>
+          <span>EV: $${waEv != null ? (waEv/1000).toFixed(1) : '—'}B</span>
+          ${cp ? `<span>Current: $${cp.toFixed(2)}</span>` : ''}
+        </div>
+      </div>`;
+
+    // Summary cards (sub-cases)
+    const cards = [
+      { cls:'base',        label:'Base Case',   price: d.impliedPrices.Base,        ev: d.enterpriseValue.Base },
+      { cls:'pessimistic', label:'Bear Case',   price: d.impliedPrices.Pessimistic, ev: d.enterpriseValue.Pessimistic },
+      { cls:'optimistic',  label:'Bull Case',   price: d.impliedPrices.Optimistic,  ev: d.enterpriseValue.Optimistic },
+    ];
+
+    document.getElementById('dcfSummary').innerHTML = cards.map(c => {
+      const pct = cp ? ((c.price - cp) / cp * 100) : null;
+      const updown = pct != null
+        ? `<div class="dcf-updown" style="color:${pct>=0?'var(--green)':'var(--red)'}">${pct>=0?'▲':'▼'} ${Math.abs(pct).toFixed(1)}% vs current</div>`
+        : '';
+      return `<div class="dcf-card ${c.cls}">
+        <div class="dcf-label">${c.label}</div>
+        <div class="dcf-price">$${c.price != null ? c.price.toFixed(2) : '—'}</div>
+        ${updown}
+        <div class="dcf-sub">EV: $${c.ev != null ? (c.ev/1000).toFixed(1) : '—'}B</div>
+      </div>`;
+    }).join('');
+
+    // Assumptions prose
+    const a = d.assumptions;
+    document.getElementById('dcf-assumptions-prose').innerHTML = `
+      <p>DCF analysis uses a <strong>WACC of ${a.wacc!=null?(a.wacc*100).toFixed(2)+'%':'—'}</strong>
+      (risk-free rate: ${a.riskFreeRate!=null?(a.riskFreeRate*100).toFixed(2)+'%':'—'},
+      ERP: ${a.erp!=null?(a.erp*100).toFixed(1)+'%':'—'},
+      beta: ${a.beta ?? '—'}) and a terminal growth rate of
+      <strong>${a.tgr!=null?(a.tgr*100).toFixed(2)+'%':'—'}</strong>
+      (long-run real GDP + breakeven inflation).</p>`;
+
+    // Assumptions sidebar
+    document.getElementById('assumptions-stats').innerHTML = [
+      ['WACC',           a.wacc != null ? (a.wacc*100).toFixed(2)+'%' : '—'],
+      ['Terminal Growth',a.tgr  != null ? (a.tgr*100).toFixed(2)+'%'  : '—'],
+      ['Beta',           a.beta ?? '—'],
+      ['Risk-Free Rate', a.riskFreeRate != null ? (a.riskFreeRate*100).toFixed(2)+'%' : '—'],
+      ['ERP',            a.erp  != null ? (a.erp*100).toFixed(1)+'%'  : '—'],
+      ['Fiscal Year End','Jan 31'],
+    ].map(([l,v]) => `<div class="sidebar-stat"><span class="s-label">${l}</span><span class="s-value">${v}</span></div>`).join('');
+
+    // Current price badge
+    if (cp) {
+      document.getElementById('current-price-badge').textContent = `Current: $${cp.toFixed(2)}`;
+    }
+
+    // Build sensitivity table for active tab
+    buildSensitivityTable('Weighted Average');
+  }
+
+  function cellColor(price, currentPrice) {
+    if (price == null || currentPrice == null) return { bg:'#f1f5f9', text:'#94a3b8' };
+    const pct = (price - currentPrice) / currentPrice * 100;
+    if (pct >  20) return { bg:'#bbf7d0', text:'#14532d' };
+    if (pct >  10) return { bg:'#dcfce7', text:'#166534' };
+    if (pct >   0) return { bg:'#f0fdf4', text:'#166534' };
+    if (pct > -10) return { bg:'#fff1f2', text:'#991b1b' };
+    if (pct > -20) return { bg:'#fecaca', text:'#991b1b' };
+    return                 { bg:'#fca5a5', text:'#7f1d1d' };
+  }
+
+  function buildSensitivityTable(scenario) {
+    const d    = MODEL.dcf;
+    const cp   = MODEL.currentPrice;
+    const a    = d.assumptions;
+    const waccLabels = scenario === 'Weighted Average' ? d.waccLabelsWA : d.waccLabels;
+    const waccVals   = scenario === 'Weighted Average' ? d.waccValuesWA : d.waccValues;
+    const rows = d.sensitivity[scenario];
+
+    // Find center row/col closest to model assumptions
+    const cCol = waccVals.reduce((best, w, i) =>
+      w != null && Math.abs(w - a.wacc) < Math.abs((waccVals[best] ?? Infinity) - a.wacc) ? i : best, 0);
+    const cRow = rows.reduce((best, r2, i) =>
+      r2.tgr != null && Math.abs(r2.tgr - a.tgr) < Math.abs((rows[best].tgr ?? Infinity) - a.tgr) ? i : best, 0);
+
+    // Highlight box: ±1 step around center
+    const BOX  = 1;
+    const rMin = Math.max(0, cRow - BOX);
+    const rMax = Math.min(rows.length - 1, cRow + BOX);
+    const cMin = Math.max(0, cCol - BOX);
+    const cMax = Math.min(waccLabels.length - 1, cCol + BOX);
+
+    const BOX_COLOR = '#1e293b';
+    const BW = '2px';
+
+    // Returns inline border styles for a cell at (ri, ci)
+    function boxBorders(ri, ci) {
+      const inBox = ri >= rMin && ri <= rMax && ci >= cMin && ci <= cMax;
+      if (!inBox) return '';
+      const top    = ri === rMin ? `border-top:${BW} solid ${BOX_COLOR};`    : '';
+      const bottom = ri === rMax ? `border-bottom:${BW} solid ${BOX_COLOR};` : '';
+      const left   = ci === cMin ? `border-left:${BW} solid ${BOX_COLOR};`   : '';
+      const right  = ci === cMax ? `border-right:${BW} solid ${BOX_COLOR};`  : '';
+      return top + bottom + left + right;
+    }
+
+    const thead = `<thead><tr>
+      <th class="row-header">TGR \\ WACC</th>
+      ${waccLabels.map(w => `<th>${w}</th>`).join('')}
+    </tr></thead>`;
+
+    const tbody = '<tbody>' + rows.map((row, ri) => {
+      const tgr = row.tgr != null ? (row.tgr*100).toFixed(2)+'%' : '—';
+      const cells = row.prices.map((p, ci) => {
+        const bdr = boxBorders(ri, ci);
+        if (p == null) return `<td class="tgr-label" style="background:#f1f5f9;color:#94a3b8;${bdr}">—</td>`;
+        const {bg, text} = cellColor(p, cp);
+        const pct  = cp ? ((p - cp) / cp * 100) : null;
+        const sign = pct != null ? (pct >= 0 ? '+' : '') : '';
+        const pctStr = pct != null
+          ? `<br><span style="font-size:0.65rem;opacity:0.8">${sign}${pct.toFixed(0)}%</span>` : '';
+        return `<td class="sens-cell" style="background:${bg};color:${text};${bdr}">$${p.toFixed(1)}${pctStr}</td>`;
+      }).join('');
+      return `<tr><td class="tgr-label">${tgr}</td>${cells}</tr>`;
+    }).join('') + '</tbody>';
+
+    document.getElementById('sensitivityTable').innerHTML = thead + tbody;
+  }
+
+  // ── Price Chart ───────────────────────────────────────────────────────────
+  let PRICE = null;
+
+  function buildPriceChart() {
+    const pd = PRICE;
+    const ff = MODEL.footballField;
+
+    // Filter to last 18 months
+    const cutoff = new Date();
+    cutoff.setMonth(cutoff.getMonth() - 18);
+    const startIdx = pd.dates.findIndex(d => new Date(d) >= cutoff);
+    const dates = pd.dates.slice(startIdx);
+    const close = pd.close.slice(startIdx);
+
+    // Source rows from football field
+    const est = ff.find(d => d.label === 'Estimate');
+    const anl = ff.find(d => d.label === 'Analyst Forecasts');
+
+    const GOLD  = '#92400e';   // dark gold / amber
+    const DGREY = '#374151';   // dark slate grey
+
+    const targets = [
+      ...(est ? [
+        { price: est.low,  label: 'Est. Low',     color: GOLD,  width: 1.5, dash: [5, 3] },
+        { price: est.avg,  label: 'Est. Mid',     color: GOLD,  width: 2.5, dash: [7, 2] },
+        { price: est.high, label: 'Est. High',    color: GOLD,  width: 1.5, dash: [5, 3] },
+      ] : []),
+      ...(anl ? [
+        { price: anl.low,  label: 'Analyst Low',  color: DGREY, width: 1.5, dash: [4, 4] },
+        { price: anl.avg,  label: 'Analyst Mid',  color: DGREY, width: 2,   dash: [4, 4] },
+        { price: anl.high, label: 'Analyst High', color: DGREY, width: 1.5, dash: [4, 4] },
+      ] : []),
+    ];
+
+    // Right-side label plugin with overlap nudging
+    const targetLabelPlugin = {
+      id: 'targetLabels',
+      afterDraw(chart) {
+        const ys      = chart.scales.y;
+        const ca      = chart.chartArea;
+        const c       = chart.ctx;
+        const MIN_GAP = 13;
+
+        // Build base positions, filter to visible range
+        const pts = targets
+          .map(t => ({ t, y: ys.getPixelForValue(t.price) }))
+          .filter(p => p.y >= ca.top - 4 && p.y <= ca.bottom + 4)
+          .sort((a, b) => b.y - a.y);   // bottom → top
+
+        // Independent nudged copies for each side
+        const leftPts  = pts.map(p => ({ ...p }));
+        const rightPts = pts.map(p => ({ ...p }));
+
+        const nudge = (arr) => {
+          for (let i = 1; i < arr.length; i++) {
+            if (arr[i - 1].y - arr[i].y < MIN_GAP) arr[i].y = arr[i - 1].y - MIN_GAP;
+          }
+        };
+        nudge(leftPts);
+        nudge(rightPts);
+
+        const bold = t => t.width >= 2 ? 'bold ' : '';
+
+        // Left-edge labels: name
+        leftPts.forEach(({ t, y }) => {
+          c.save();
+          const PAD = 4;
+          const txt = t.label;
+          c.font = `${bold(t)}10px Arial`;
+          const tw = c.measureText(txt).width;
+          // White knockout behind text for readability
+          c.fillStyle    = 'rgba(247,249,252,0.85)';
+          c.fillRect(ca.left + PAD - 2, y - 7, tw + 4, 14);
+          c.fillStyle    = t.color;
+          c.textAlign    = 'left';
+          c.textBaseline = 'middle';
+          c.fillText(txt, ca.left + PAD, y);
+          c.restore();
+        });
+
+        // Right-edge labels: price
+        rightPts.forEach(({ t, y }) => {
+          c.save();
+          c.fillStyle    = t.color;
+          c.font         = `${bold(t)}10px Arial`;
+          c.textAlign    = 'left';
+          c.textBaseline = 'middle';
+          c.fillText(`$${t.price.toFixed(0)}`, ca.right + 6, y);
+          c.restore();
+        });
+      },
+    };
+
+    const gradientFill = (context) => {
+      const chart = context.chart;
+      const { ctx: c2, chartArea } = chart;
+      if (!chartArea) return 'transparent';
+      const grad = c2.createLinearGradient(0, chartArea.top, 0, chartArea.bottom);
+      grad.addColorStop(0,   'rgba(26,86,219,0.15)');
+      grad.addColorStop(0.8, 'rgba(26,86,219,0.03)');
+      grad.addColorStop(1,   'rgba(26,86,219,0)');
+      return grad;
+    };
+
+    const flat = price => dates.map(() => price);
+
+    const datasets = [
+      {
+        label:           'OKTA Close',
+        data:            close,
+        borderColor:     '#1a56db',
+        backgroundColor: gradientFill,
+        borderWidth:     1.5,
+        pointRadius:     0,
+        fill:            true,
+        tension:         0.1,
+        order:           1,
+      },
+      ...targets.map((t, i) => ({
+        label:       t.label,
+        data:        flat(t.price),
+        borderColor: t.color,
+        borderWidth: t.width,
+        borderDash:  t.dash,
+        pointRadius: 0,
+        fill:        false,
+        order:       i + 2,
+      })),
+    ];
+
+    new Chart(document.getElementById('priceChart').getContext('2d'), {
+      type: 'line',
+      data: { labels: dates, datasets },
+      options: {
+        responsive:          true,
+        maintainAspectRatio: false,
+        interaction:         { mode: 'index', intersect: false },
+        layout:              { padding: { top: 8 } },
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              title: items => {
+                const dt = new Date(items[0].label);
+                return dt.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+              },
+              label: item => item.datasetIndex === 0
+                ? ` Close: $${Number(item.raw).toFixed(2)}`
+                : null,
+              afterBody: () => [
+                ...(est ? [` LCR Estimate:  $${est.low.toFixed(0)} · $${est.avg.toFixed(0)} · $${est.high.toFixed(0)}`] : []),
+                ...(anl ? [` Analyst Range: $${anl.low.toFixed(0)} · $${anl.avg.toFixed(0)} · $${anl.high.toFixed(0)}`] : []),
+              ],
+            },
+          },
+        },
+        scales: {
+          x: {
+            grid:  { display: false },
+            ticks: {
+              maxTicksLimit: 10,
+              maxRotation:   0,
+              callback: val => {
+                const s = dates[val];
+                if (!s) return '';
+                const dt = new Date(s);
+                return dt.toLocaleDateString('en-US', { month: 'short', year: '2-digit' });
+              },
+              font: { size: 11 },
+            },
+          },
+          y: {
+            grid:  { color: 'rgba(0,0,0,0.05)' },
+            ticks: { callback: v => `$${v}`, font: { size: 11 } },
+          },
+        },
+      },
+      plugins: [targetLabelPlugin],
+    });
+
+    // HTML legend
+    document.getElementById('price-legend').innerHTML = `
+      <span class="ff-legend-item">
+        <span class="ff-swatch" style="background:#1a56db;height:3px;border-radius:0;"></span>OKTA Close
+      </span>
+      <span class="ff-legend-item">
+        <span style="display:inline-block;width:22px;border-top:2.5px dashed #92400e;margin-right:6px;vertical-align:middle;"></span>LCR Estimate (Low · Mid · High)
+      </span>
+      <span class="ff-legend-item">
+        <span style="display:inline-block;width:22px;border-top:2px dashed #374151;margin-right:6px;vertical-align:middle;"></span>Analyst Consensus (Low · Mid · High)
+      </span>`;
+
+    // Timestamp
+    const gen = new Date(pd.generatedAt);
+    document.getElementById('price-updated').textContent =
+      gen.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  }
+
+  // ── Football Field ────────────────────────────────────────────────────────
+  const FF_COLORS = {
+    'Estimate':                '#1e293b',
+    'DCF Implied Share Price': '#1a56db',
+    '52-Week Trading Range':   '#64748b',
+    'Analyst Forecasts':       '#d97706',
+    'Revenue Comparables':     '#0d9488',
+    'EBITDA Comparables':      '#7c3aed',
+    'Forward PE (2027)':       '#6366f1',
+    'Forward PE (2028)':       '#818cf8',
+  };
+
+  function buildFootballField() {
+    const ff = MODEL.footballField;
+    const cp = MODEL.currentPrice;
+
+    // Order: Estimate at bottom (last label = bottom in horizontal bar)
+    // Chart.js renders labels top→bottom, so reverse to put Estimate at bottom
+    const items = [...ff];
+    const labels = items.map(d =>
+      d.label === 'DCF Implied Share Price' ? 'DCF' : d.label
+    );
+    const ranges = items.map(d => [d.low, d.high]);
+    const bgColors  = items.map(d => hexAlpha(FF_COLORS[d.label] || '#94a3b8', 0.65));
+    const brdColors = items.map(d => FF_COLORS[d.label] || '#94a3b8');
+
+    // Custom plugin: draws current-price line and average diamonds
+    const ffPlugin = {
+      id: 'ffOverlay',
+      afterDraw(chart) {
+        const ctx    = chart.ctx;
+        const xScale = chart.scales.x;
+        const yScale = chart.scales.y;
+        const ca     = chart.chartArea;
+
+        // Current price vertical line
+        if (cp != null) {
+          const x = xScale.getPixelForValue(cp);
+          ctx.save();
+          ctx.beginPath();
+          ctx.strokeStyle = '#ef4444';
+          ctx.lineWidth   = 2;
+          ctx.setLineDash([6, 4]);
+          ctx.moveTo(x, ca.top);
+          ctx.lineTo(x, ca.bottom);
+          ctx.stroke();
+          ctx.setLineDash([]);
+          // Label above chart
+          ctx.fillStyle  = '#ef4444';
+          ctx.font       = 'bold 10px Arial';
+          ctx.textAlign  = 'center';
+          ctx.fillText(`$${cp.toFixed(2)}`, x, ca.top - 6);
+          ctx.restore();
+        }
+
+        // Average diamond markers
+        items.forEach((item, i) => {
+          if (item.avg == null) return;
+          const x  = xScale.getPixelForValue(item.avg);
+          const y  = yScale.getPixelForValue(i);
+          const s  = item.label === 'Estimate' ? 7 : 5;
+          const c  = FF_COLORS[item.label] || '#1e293b';
+          ctx.save();
+          ctx.fillStyle   = c;
+          ctx.strokeStyle = '#fff';
+          ctx.lineWidth   = 1.5;
+          ctx.beginPath();
+          ctx.moveTo(x,     y - s);
+          ctx.lineTo(x + s, y    );
+          ctx.lineTo(x,     y + s);
+          ctx.lineTo(x - s, y    );
+          ctx.closePath();
+          ctx.fill();
+          ctx.stroke();
+          ctx.restore();
+        });
+      },
+    };
+
+    new Chart(document.getElementById('footballFieldChart').getContext('2d'), {
+      type: 'bar',
+      data: {
+        labels,
+        datasets: [{
+          data:            ranges,
+          backgroundColor: bgColors,
+          borderColor:     brdColors,
+          borderWidth:     1.5,
+          borderRadius:    3,
+          borderSkipped:   false,
+        }],
+      },
+      options: {
+        indexAxis: 'y',
+        responsive: true,
+        maintainAspectRatio: false,
+        layout: { padding: { top: 20 } },
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              title: ctx => ctx[0].label,
+              label: ctx => {
+                const item = items[ctx.dataIndex];
+                return [
+                  ` Low:  $${item.low != null ? item.low.toFixed(1) : '—'}`,
+                  ` Avg:  $${item.avg != null ? item.avg.toFixed(1) : '—'}`,
+                  ` High: $${item.high != null ? item.high.toFixed(1) : '—'}`,
+                ];
+              },
+            },
+          },
+        },
+        scales: {
+          x: {
+            min: 0,
+            ticks: { callback: v => `$${v}`, font: { size: 11 } },
+            grid:  { color: 'rgba(0,0,0,0.05)' },
+            title: { display: true, text: 'Implied Share Price (USD)', font: { size: 11 } },
+          },
+          y: {
+            grid: { display: false },
+            ticks: {
+              font: ctx => ctx.tick.label === 'Estimate' ? { size: 11, weight: 'bold' } : { size: 11 },
+            },
+          },
+        },
+      },
+      plugins: [ffPlugin],
+    });
+
+    // Legend
+    document.getElementById('ffLegend').innerHTML = [...ff].map(item => {
+      const c   = FF_COLORS[item.label] || '#94a3b8';
+      const lbl = item.label === 'DCF Implied Share Price' ? 'DCF' : item.label;
+      return `<span class="ff-legend-item">
+        <span class="ff-swatch" style="background:${hexAlpha(c,0.7)};border:1px solid ${c};"></span>${lbl}
+      </span>`;
+    }).join('');
+  }
+
+  // ── Comps Table ───────────────────────────────────────────────────────────
+  function buildCompsTable() {
+    const comps = MODEL.comps;
+    const fmtB  = v => v == null ? '—' : `$${(v / 1000).toFixed(1)}B`;
+    const fmtM  = v => v == null ? '—' : `$${Math.round(v).toLocaleString()}M`;
+    const fmtMx = v => v == null ? 'N/M' : `${v.toFixed(1)}x`;
+    const fmtP2 = v => v == null ? '—' : `$${v.toFixed(2)}`;
+
+    const cols = [
+      { label: 'Company',       fn: c => `<strong>${c.name}</strong><br><span style="font-weight:400;color:var(--muted);font-size:0.78rem;">${c.ticker}</span>` },
+      { label: 'As Of',         fn: c => c.fileDate ?? '—' },
+      { label: 'Price',         fn: c => fmtP2(c.price) },
+      { label: 'Mkt Cap',       fn: c => fmtB(c.mktCap) },
+      { label: 'EV',            fn: c => fmtB(c.ev) },
+      { label: 'TTM Revenue',   fn: c => fmtM(c.revenue) },
+      { label: 'TTM EBITDA',    fn: c => fmtM(c.ebitda) },
+      { label: 'EV / Revenue',  fn: c => fmtMx(c.evRev) },
+      { label: 'EV / EBITDA',   fn: c => fmtMx(c.evEbitda) },
+      { label: 'P / E',         fn: c => fmtMx(c.pe) },
+    ];
+
+    const thead = `<thead><tr>${cols.map(col =>
+      `<th style="white-space:nowrap;">${col.label}</th>`
+    ).join('')}</tr></thead>`;
+
+    const tbody = '<tbody>' + comps.map(c => {
+      const isOkta = c.ticker === 'OKTA';
+      const rowStyle = isOkta
+        ? 'background:var(--blue-light);font-weight:600;'
+        : '';
+      const cells = cols.map(col =>
+        `<td style="${isOkta ? 'color:var(--blue-dark);' : ''}">${col.fn(c)}</td>`
+      ).join('');
+      return `<tr style="${rowStyle}">${cells}</tr>`;
+    }).join('') + '</tbody>';
+
+    document.getElementById('compsTable').innerHTML = thead + tbody;
+
+    // Median row
+    const medians = {
+      evRev:    median(comps.filter(c => c.ticker !== 'OKTA' && c.evRev   != null).map(c => c.evRev)),
+      evEbitda: median(comps.filter(c => c.ticker !== 'OKTA' && c.evEbitda!= null).map(c => c.evEbitda)),
+      pe:       median(comps.filter(c => c.ticker !== 'OKTA' && c.pe      != null).map(c => c.pe)),
+    };
+    document.getElementById('comps-note').textContent =
+      `Peer median (ex-Okta): EV/Revenue ${fmtMx(medians.evRev)} · EV/EBITDA ${fmtMx(medians.evEbitda)} · P/E ${fmtMx(medians.pe)}. `+
+      `N/M = not meaningful (negative or >500× multiple).`;
+  }
+
+  function median(arr) {
+    if (!arr.length) return null;
+    const s = [...arr].sort((a, b) => a - b);
+    const m = Math.floor(s.length / 2);
+    return s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2;
+  }
+
+  // ── Wire up buttons ───────────────────────────────────────────────────────
+  function wireScenarioButtons() {
+    document.querySelectorAll('.scenario-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.scenario-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        activeSc = btn.dataset.scenario;
+        buildCharts(activeSc);
+        buildKpiTable(activeSc);
+      });
+    });
+
+    document.querySelectorAll('.sens-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.sens-tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        buildSensitivityTable(tab.dataset.tab);
+      });
+    });
+  }
+
+  // ── Bootstrap ─────────────────────────────────────────────────────────────
+  Promise.all([
+    fetch('data/okta_data.json').then(r => r.json()),
+    fetch('data/okta_price.json').then(r => r.json()).catch(() => null),
+  ]).then(([modelData, priceData]) => {
+    MODEL = modelData;
+    PRICE = priceData;
+
+    // Show generated timestamp
+    const gen = new Date(modelData.generatedAt);
+    document.getElementById('model-generated').textContent =
+      `(data from ${gen.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})})`;
+
+    // Model sections
+    document.getElementById('model-loading').style.display = 'none';
+    document.getElementById('model-content').style.display = 'block';
+    document.getElementById('dcf-loading').style.display   = 'none';
+    document.getElementById('dcf-content').style.display   = 'block';
+    document.getElementById('ff-loading').style.display    = 'none';
+    document.getElementById('ff-content').style.display    = 'block';
+
+    wireScenarioButtons();
+    buildCharts('Weighted Average');
+    buildKpiTable('Weighted Average');
+    buildDcfSection();
+    buildCompsTable();
+    buildFootballField();
+
+    // Price chart
+    if (PRICE) {
+      document.getElementById('price-loading').style.display = 'none';
+      document.getElementById('price-content').style.display = 'block';
+      buildPriceChart();
+    } else {
+      document.getElementById('price-loading').textContent = 'Price data unavailable — run fetch_okta_price.py to generate.';
+    }
+  }).catch(err => {
+    document.getElementById('model-loading').textContent = 'Could not load model data.';
+    document.getElementById('dcf-loading').textContent   = 'Could not load model data.';
+    console.error(err);
+  });
+  </script>
+</body>
+</html>
