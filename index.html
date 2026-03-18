@@ -8,21 +8,25 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --blue:     #1a56db;
-      --blue-dark:#1240a8;
+      --blue:      #1a56db;
+      --blue-dark: #1240a8;
       --blue-light:#e8f0fe;
-      --white:    #ffffff;
-      --offwhite: #f7f9fc;
-      --text:     #1e293b;
-      --muted:    #64748b;
-      --border:   #e2e8f0;
+      --white:     #ffffff;
+      --offwhite:  #f7f9fc;
+      --text:      #1e293b;
+      --muted:     #64748b;
+      --border:    #e2e8f0;
+      --green:     #16a34a;
+      --green-bg:  #dcfce7;
+      --red:       #dc2626;
+      --red-bg:    #fee2e2;
     }
 
     html { scroll-behavior: smooth; }
 
     body {
       font-family: 'Georgia', serif;
-      background: var(--white);
+      background: var(--offwhite);
       color: var(--text);
       min-height: 100vh;
     }
@@ -30,13 +34,15 @@
     /* ── Nav ── */
     nav {
       position: fixed;
-      top: 0; left: 0; right: 0;
+      top: 0;
+      left: 0;
+      right: 0;
       z-index: 100;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 1.2rem 4rem;
-      background: rgba(255,255,255,0.95);
+      padding: 1.2rem 2rem;
+      background: rgba(255,255,255,0.97);
       backdrop-filter: blur(8px);
       border-bottom: 1px solid var(--border);
       box-shadow: 0 1px 4px rgba(0,0,0,0.06);
@@ -231,81 +237,6 @@
 
     .btn-outline:hover { background: var(--blue-light); }
 
-    .divider {
-      width: 60px;
-      height: 2px;
-      background: var(--blue);
-      margin: 0 auto 1.5rem;
-    }
-
-    /* ── Pillars ── */
-    .pillars {
-      padding: 6rem 4rem;
-      background: var(--offwhite);
-    }
-
-    .section-header {
-      text-align: center;
-      margin-bottom: 4rem;
-    }
-
-    .section-eyebrow {
-      font-family: 'Arial', sans-serif;
-      font-size: 0.7rem;
-      letter-spacing: 0.3em;
-      text-transform: uppercase;
-      color: var(--blue);
-      margin-bottom: 0.75rem;
-    }
-
-    .section-header h2 {
-      font-size: clamp(1.6rem, 3vw, 2.4rem);
-      font-weight: 400;
-      color: var(--text);
-    }
-
-    .cards {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 1.5rem;
-      max-width: 1100px;
-      margin: 0 auto;
-    }
-
-    .card {
-      background: var(--white);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 2.25rem 2rem;
-      transition: border-color 0.25s, transform 0.25s, box-shadow 0.25s;
-    }
-
-    .card:hover {
-      border-color: var(--blue);
-      transform: translateY(-4px);
-      box-shadow: 0 8px 24px rgba(26,86,219,0.1);
-    }
-
-    .card-icon {
-      font-size: 1.8rem;
-      margin-bottom: 1.1rem;
-    }
-
-    .card h3 {
-      font-size: 1.1rem;
-      color: var(--text);
-      margin-bottom: 0.75rem;
-      font-weight: 400;
-      letter-spacing: 0.02em;
-    }
-
-    .card p {
-      font-family: 'Arial', sans-serif;
-      font-size: 0.9rem;
-      color: var(--muted);
-      line-height: 1.65;
-    }
-
     /* ── Stats bar ── */
     .stats {
       background: var(--blue);
@@ -333,33 +264,193 @@
       color: rgba(255,255,255,0.7);
     }
 
-    /* ── CTA ── */
-    .cta {
-      padding: 7rem 2rem;
-      text-align: center;
+    /* ── Research section label ── */
+    .divider {
+      width: 60px;
+      height: 2px;
+      background: var(--blue);
+      margin: 0 auto 1.5rem;
+    }
+
+    /* ── Page header ── */
+    .page-header {
       background: var(--white);
+      border-bottom: 1px solid var(--border);
+      padding: 3.5rem 4rem 3rem;
+    }
+
+    .page-header-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .page-eyebrow {
+      font-family: 'Arial', sans-serif;
+      font-size: 0.7rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--blue);
+      margin-bottom: 0.75rem;
+    }
+
+    .page-header h1 {
+      font-size: clamp(1.6rem, 3vw, 2.4rem);
+      font-weight: 400;
+      color: var(--text);
+      margin-bottom: 0.6rem;
+    }
+
+    .page-header p {
+      font-family: 'Arial', sans-serif;
+      font-size: 0.95rem;
+      color: var(--muted);
+      max-width: 540px;
+      line-height: 1.65;
+    }
+
+    /* ── Research grid ── */
+    .research-section {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 3rem 4rem 5rem;
+    }
+
+    .research-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 1.5rem;
+    }
+
+    /* ── Research tile ── */
+    .research-tile {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1.75rem 2rem;
+      text-decoration: none;
+      color: inherit;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      transition: border-color 0.25s, transform 0.25s, box-shadow 0.25s;
+      cursor: pointer;
+    }
+
+    .research-tile:hover {
+      border-color: var(--blue);
+      transform: translateY(-4px);
+      box-shadow: 0 10px 30px rgba(26,86,219,0.1);
+    }
+
+    .tile-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 0.75rem;
+    }
+
+    .tile-ticker {
+      font-family: 'Arial', sans-serif;
+      font-size: 0.7rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--blue);
+      background: var(--blue-light);
+      padding: 0.25rem 0.6rem;
+      border-radius: 4px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .tile-rating {
+      font-family: 'Arial', sans-serif;
+      font-size: 0.7rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      font-weight: 700;
+      padding: 0.25rem 0.6rem;
+      border-radius: 4px;
+    }
+
+    .rating-buy  { background: var(--green-bg); color: var(--green); }
+    .rating-hold { background: #fef9c3; color: #a16207; }
+    .rating-sell { background: var(--red-bg); color: var(--red); }
+
+    .tile-company {
+      font-size: 1.2rem;
+      font-weight: 400;
+      color: var(--text);
+      letter-spacing: 0.01em;
+    }
+
+    .tile-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem 1rem;
+      font-family: 'Arial', sans-serif;
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+
+    .tile-meta-item {
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+
+    .tile-meta-item svg {
+      opacity: 0.6;
+      flex-shrink: 0;
+    }
+
+    .tile-summary {
+      font-family: 'Arial', sans-serif;
+      font-size: 0.88rem;
+      color: var(--muted);
+      line-height: 1.65;
+      flex: 1;
+    }
+
+    .tile-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: 0.75rem;
       border-top: 1px solid var(--border);
     }
 
-    .cta h2 {
-      font-size: clamp(1.8rem, 3.5vw, 2.8rem);
-      font-weight: 400;
-      color: var(--text);
-      margin-bottom: 1rem;
-      max-width: 600px;
-      margin-left: auto;
-      margin-right: auto;
+    .tile-target {
+      font-family: 'Arial', sans-serif;
+      font-size: 0.8rem;
+      color: var(--muted);
     }
 
-    .cta p {
-      font-family: 'Arial', sans-serif;
+    .tile-target strong {
+      color: var(--text);
+      font-size: 0.9rem;
+    }
+
+    .tile-arrow {
+      color: var(--blue);
+      font-size: 1rem;
+      transition: transform 0.2s;
+    }
+
+    .research-tile:hover .tile-arrow { transform: translateX(4px); }
+
+    /* ── Empty state ── */
+    .empty-state {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 4rem 2rem;
       color: var(--muted);
-      margin-bottom: 2.5rem;
+      font-family: 'Arial', sans-serif;
+      font-size: 0.95rem;
     }
 
     /* ── Footer ── */
     footer {
-      background: var(--offwhite);
+      background: var(--white);
       padding: 2.5rem 4rem;
       display: flex;
       align-items: center;
@@ -385,12 +476,13 @@
     }
 
     @media (max-width: 700px) {
-      nav { padding: 1rem 1.5rem; }
+      nav { padding: 1rem; }
       nav ul { display: none; }
-      .pillars, .stats { padding: 4rem 1.5rem; }
+      .page-header { padding: 2.5rem 1.5rem 2rem; }
+      .research-section { padding: 2rem 1.5rem 4rem; }
+      .stats { padding: 3rem 1.5rem; gap: 2.5rem; }
       footer { flex-direction: column; text-align: center; }
       .footer-note { text-align: center; }
-      .stats { gap: 2.5rem; }
     }
   </style>
 </head>
@@ -398,44 +490,28 @@
 
   <!-- Nav -->
   <nav>
-    <a href="#" class="nav-logo">
+    <a href="index.html" class="nav-logo">
       <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
         <polygon points="14,2 18,10 27,11 21,17 23,26 14,21 5,26 7,17 1,11 10,10" fill="none" stroke="#1a56db" stroke-width="1.5" stroke-linejoin="round"/>
         <circle cx="14" cy="14" r="3" fill="#1a56db"/>
       </svg>
       <span class="nav-logo-text">Lighthouse <span>Capital</span> Research</span>
     </a>
-    <ul>
-      <li><a href="index.html#approach">Approach</a></li>
-      <li><a href="index.html#focus">Focus Areas</a></li>
-      <li class="nav-dropdown">
-        <a href="equity-research/index.html">Equity Research</a>
-        <div class="dropdown-menu">
-          <div class="dropdown-menu-inner">
-            <a href="equity-research/okta.html">Okta (OKTA)</a>
-          </div>
-        </div>
-      </li>
-      <li><a href="index.html#contact">Contact</a></li>
-    </ul>
+    <ul></ul>
   </nav>
 
   <!-- Hero -->
   <section class="hero">
     <div class="beacon">
       <svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <!-- Lighthouse beam rays -->
         <line x1="40" y1="30" x2="10" y2="5"  stroke="#1a56db" stroke-width="1" opacity="0.4"/>
         <line x1="40" y1="30" x2="40" y2="2"  stroke="#1a56db" stroke-width="1" opacity="0.6"/>
         <line x1="40" y1="30" x2="70" y2="5"  stroke="#1a56db" stroke-width="1" opacity="0.4"/>
-        <!-- Tower -->
         <rect x="34" y="30" width="12" height="30" rx="1" fill="#1a56db" opacity="0.9"/>
         <rect x="30" y="58" width="20" height="5"  rx="1" fill="#1a56db"/>
-        <!-- Light housing -->
         <rect x="31" y="22" width="18" height="10" rx="2" fill="#1a56db"/>
         <circle cx="40" cy="27" r="4" fill="#ffffff"/>
         <circle cx="40" cy="27" r="2" fill="#93c5fd"/>
-        <!-- Base -->
         <rect x="26" y="63" width="28" height="4" rx="1" fill="#1a56db" opacity="0.6"/>
       </svg>
     </div>
@@ -445,7 +521,7 @@
       Lighthouse Capital Research delivers institutional-grade analysis to help investors navigate complexity and identify enduring value.
     </p>
     <div class="btn-group">
-      <a href="#focus" class="btn btn-primary">Our Focus Areas</a>
+      <a href="#research" class="btn btn-primary">View Research</a>
       <a href="#contact" class="btn btn-outline">Get in Touch</a>
     </div>
   </section>
@@ -466,69 +542,63 @@
     </div>
   </div>
 
-  <!-- Approach -->
-  <section class="pillars" id="approach">
-    <div class="section-header">
-      <p class="section-eyebrow">How We Work</p>
-      <div class="divider"></div>
-      <h2>Our Research Philosophy</h2>
+  <!-- Page Header -->
+  <div class="page-header" id="research">
+    <div class="page-header-inner">
+      <p class="page-eyebrow">Equity Research</p>
+      <h1>Research Coverage</h1>
+      <p>Institutional-grade analysis across equities, private credit, and emerging markets.</p>
     </div>
-    <div class="cards">
-      <div class="card">
-        <div class="card-icon">🔍</div>
-        <h3>Fundamental Analysis</h3>
-        <p>We go beyond the surface — examining financials, competitive dynamics, management quality, and industry structure to build a complete picture.</p>
-      </div>
-      <div class="card">
-        <div class="card-icon">📐</div>
-        <h3>Quantitative Rigor</h3>
-        <p>Our proprietary models stress-test assumptions across scenarios, grounding every thesis in data and defensible valuation frameworks.</p>
-      </div>
-      <div class="card">
-        <div class="card-icon">🧭</div>
-        <h3>Long-Term Perspective</h3>
-        <p>We focus on durable competitive advantages and multi-year return potential — not quarterly noise or short-term market sentiment.</p>
-      </div>
+  </div>
+
+  <!-- Research Grid -->
+  <section class="research-section">
+    <div class="research-grid">
+
+      <!-- Okta -->
+      <a href="equity-research/okta.html" class="research-tile">
+        <div class="tile-top">
+          <span class="tile-ticker">NASDAQ: OKTA</span>
+          <span class="tile-rating rating-buy">Buy</span>
+        </div>
+        <div class="tile-company">Okta, Inc.</div>
+        <div class="tile-meta">
+          <span class="tile-meta-item">
+            <svg width="12" height="12" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="1" y="3" width="14" height="12" rx="2" stroke="currentColor" stroke-width="1.5"/>
+              <path d="M5 1v4M11 1v4M1 7h14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+            March 2026
+          </span>
+          <span class="tile-meta-item">Technology · Identity &amp; Access Management</span>
+        </div>
+        <p class="tile-summary">Best-of-breed independent identity platform with durable switching costs, an underpenetrated Customer Identity vector, and a compelling FCF inflection story.</p>
+        <div class="tile-footer">
+          <div class="tile-target">
+            Price Target&nbsp; <strong id="okta-price-target">—</strong>
+          </div>
+          <span class="tile-arrow">→</span>
+        </div>
+      </a>
+
     </div>
   </section>
 
-  <!-- Focus Areas -->
-  <section class="pillars" id="focus" style="background: var(--white);">
-    <div class="section-header">
-      <p class="section-eyebrow">Coverage Universe</p>
-      <div class="divider"></div>
-      <h2>Areas of Focus</h2>
-    </div>
-    <div class="cards">
-      <div class="card">
-        <div class="card-icon">💼</div>
-        <h3>Small through Large-Cap Equities</h3>
-        <p>Underanalyzed companies where independent research creates genuine informational edge and alpha potential.</p>
-      </div>
-      <div class="card">
-        <div class="card-icon">⚖️</div>
-        <h3>Private Credit Markets</h3>
-        <p>Complex deals where junior and senior debt structures create unique investment opportunities.</p>
-      </div>
-      <div class="card">
-        <div class="card-icon">🌐</div>
-        <h3>Emerging Markets</h3>
-        <p>High-conviction opportunities in markets where complexity and information asymmetry reward careful fundamental work.</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- CTA -->
-  <section class="cta" id="contact">
-    <p class="section-eyebrow">Get in Touch</p>
-    <div class="divider"></div>
-    <h2>Ready to See What We're Working On?</h2>
-    <p>Reach out to learn more about our research and how we can help.</p>
-    <a href="mailto:research@lighthousecapital.com" class="btn btn-primary">Contact Us</a>
-  </section>
+  <script>
+    fetch('equity-research/data/okta_data.json')
+      .then(r => r.json())
+      .then(data => {
+        const est = data.footballField?.find(d => d.label === 'Estimate');
+        if (est) {
+          document.getElementById('okta-price-target').textContent =
+            `$${Math.round(est.avg)} – $${Math.round(est.high)}`;
+        }
+      })
+      .catch(() => {});
+  </script>
 
   <!-- Footer -->
-  <footer>
+  <footer id="contact">
     <span class="footer-copy">&copy; 2026 Lighthouse Capital Research. All rights reserved.</span>
     <span class="footer-note">For informational purposes only. Nothing on this site constitutes investment advice or a solicitation to buy or sell any security.</span>
   </footer>

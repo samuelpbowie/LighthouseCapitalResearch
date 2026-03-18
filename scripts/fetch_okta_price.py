@@ -13,7 +13,7 @@ from datetime import datetime
 OUTPUT_PATH = os.path.join(os.path.dirname(__file__), '..', 'equity-research', 'data', 'okta_price.json')
 
 from datetime import timedelta
-start_date = (datetime.now() - timedelta(days=548)).strftime('%Y-%m-%d')  # ~18 months
+start_date = (datetime.now() - timedelta(days=365)).strftime('%Y-%m-%d')  # 12 months
 
 ticker = yf.Ticker("OKTA")
 hist   = ticker.history(start=start_date)
