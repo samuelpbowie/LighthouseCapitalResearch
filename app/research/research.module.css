@@ -1,0 +1,200 @@
+/* ── Page Header ── */
+.pageHeader {
+  margin-top: 68px;
+  padding: 4rem 4rem 3rem;
+  background: linear-gradient(135deg, #f0f5ff 0%, var(--white) 60%);
+  border-bottom: 1px solid var(--border);
+}
+
+.breadcrumb {
+  font-family: 'Arial', sans-serif;
+  font-size: 0.8rem;
+  color: var(--muted);
+  margin-bottom: 1.25rem;
+  letter-spacing: 0.05em;
+}
+
+.breadcrumb a { color: var(--blue); text-decoration: none; }
+.breadcrumb a:hover { text-decoration: underline; }
+.breadcrumb span { margin: 0 0.4rem; }
+
+.pageHeader h1 {
+  font-size: 2.2rem;
+  font-weight: 400;
+  color: var(--text);
+  margin-bottom: 0.5rem;
+}
+
+.pageHeader p {
+  font-family: 'Arial', sans-serif;
+  font-size: 1rem;
+  color: var(--muted);
+  max-width: 560px;
+  line-height: 1.6;
+}
+
+/* ── Filters ── */
+.toolbar {
+  max-width: 1100px;
+  margin: 2.5rem auto 0;
+  padding: 0 4rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.filterGroup {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.filterBtn {
+  font-family: 'Arial', sans-serif;
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 0.4rem 1rem;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  background: var(--white);
+  color: var(--muted);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.filterBtn:hover,
+.filterBtnActive {
+  background: var(--blue);
+  border-color: var(--blue);
+  color: var(--white);
+}
+
+.resultCount {
+  font-family: 'Arial', sans-serif;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+/* ── Research Grid ── */
+.researchWrap {
+  max-width: 1100px;
+  margin: 2.5rem auto 6rem;
+  padding: 0 4rem;
+}
+
+.researchGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1.5rem;
+}
+
+.researchCard {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 1.75rem;
+  text-decoration: none;
+  color: inherit;
+  display: flex;
+  flex-direction: column;
+  transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
+}
+
+.researchCard:hover {
+  border-color: var(--blue);
+  box-shadow: 0 8px 24px rgba(26,86,219,0.1);
+  transform: translateY(-3px);
+}
+
+.cardTop {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+  gap: 0.75rem;
+}
+
+.cardTicker {
+  font-family: 'Arial', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  background: var(--blue-light);
+  color: var(--blue);
+  padding: 0.2rem 0.55rem;
+  border-radius: 4px;
+  white-space: nowrap;
+}
+
+.cardRating {
+  font-family: 'Arial', sans-serif;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  padding: 0.2rem 0.6rem;
+  border-radius: 4px;
+}
+
+.ratingBuy  { background: #dcfce7; color: #15803d; }
+.ratingHold { background: #fef9c3; color: #854d0e; }
+.ratingSell { background: #fee2e2; color: #b91c1c; }
+
+.cardCompany {
+  font-size: 1.15rem;
+  font-weight: 400;
+  color: var(--text);
+  margin-bottom: 0.4rem;
+}
+
+.cardSector {
+  font-family: 'Arial', sans-serif;
+  font-size: 0.8rem;
+  color: var(--muted);
+  margin-bottom: 1rem;
+}
+
+.cardSummary {
+  font-family: 'Arial', sans-serif;
+  font-size: 0.875rem;
+  color: #475569;
+  line-height: 1.65;
+  flex-grow: 1;
+  margin-bottom: 1.25rem;
+}
+
+.cardFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border);
+  font-family: 'Arial', sans-serif;
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+
+.cardFooter .pt { font-weight: 600; color: var(--text); }
+
+.cardArrow {
+  color: var(--blue);
+  font-size: 1rem;
+  transition: transform 0.2s;
+}
+
+.researchCard:hover .cardArrow { transform: translateX(4px); }
+
+.emptyState {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 4rem 2rem;
+  color: var(--muted);
+  font-family: 'Arial', sans-serif;
+  font-size: 0.95rem;
+}
+
+@media (max-width: 700px) {
+  .pageHeader, .toolbar, .researchWrap { padding-left: 1.5rem; padding-right: 1.5rem; }
+}

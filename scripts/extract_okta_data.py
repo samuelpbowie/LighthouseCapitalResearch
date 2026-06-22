@@ -10,7 +10,7 @@ import openpyxl
 from datetime import datetime
 
 MODEL_PATH  = os.path.join(os.path.dirname(__file__), '..', 'model_files', 'Okta Model.xlsm')
-OUTPUT_PATH = os.path.join(os.path.dirname(__file__), '..', 'equity-research', 'data', 'okta_data.json')
+OUTPUT_PATH = os.path.join(os.path.dirname(__file__), '..', 'data', 'okta_data.json')
 
 def r(v, decimals=2):
     """Round a float; return None if falsy."""
@@ -285,7 +285,7 @@ COMP_COLS = [2, 3, 4, 5, 6, 7]   # Okta → Zscaler
 
 def fmt_date(v):
     if isinstance(v, datetime):
-        return v.strftime('%b %Y')
+        return f'{v.month}/{v.day}/{v.year}'
     return str(v) if v else None
 
 comps = []
