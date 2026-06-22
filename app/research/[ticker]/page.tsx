@@ -153,7 +153,7 @@ export default async function TickerPage({ params }: { params: Promise<{ ticker:
 
       {/* Row 2 */}
       <div className={`${styles.pageRow} ${styles.pageRowModel}`}>
-        <FinancialModelSection modelData={modelData} />
+        <FinancialModelSection modelData={modelData} reportUpdated={report.updated} />
       </div>
 
       <div className={styles.rowSep} />

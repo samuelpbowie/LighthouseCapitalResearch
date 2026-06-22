@@ -18,7 +18,7 @@ function splitSeries(arr: (number | null)[], joinLine: boolean, hist: number) {
   return [histArr, proj];
 }
 
-export default function FinancialModelSection({ modelData }: { modelData: ModelData }) {
+export default function FinancialModelSection({ modelData, reportUpdated }: { modelData: ModelData; reportUpdated: string }) {
   const [mode, setMode] = useState<Mode>('single');
 
   // Historical years are the ones without an "E" (estimate) suffix — derived from the
@@ -214,9 +214,11 @@ export default function FinancialModelSection({ modelData }: { modelData: ModelD
     { label: 'EPS (Basic)', vals: modelData.metrics.EPS[scenario], fmt: fmtE },
   ];
 
-  const gen = new Date(modelData.generatedAt);
-  const kpiNote = `E = Lighthouse Capital Research estimates (${scenario} scenario). Model data as of ${gen.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}.`;
-  const generatedLabel = `(data from ${gen.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })})`;
+  // Uses the report's manually-curated "Updated" date, not modelData.generatedAt —
+  // generatedAt is just an extraction-script timestamp (changes every time the script is
+  // re-run, e.g. for an unrelated formatting fix) and isn't a meaningful "as of" date.
+  const kpiNote = `E = Lighthouse Capital Research estimates (${scenario} scenario). Model data as of ${reportUpdated}.`;
+  const generatedLabel = `(data from ${reportUpdated})`;
 
   return (
     <>

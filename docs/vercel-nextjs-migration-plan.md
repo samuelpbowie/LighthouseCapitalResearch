@@ -133,18 +133,37 @@ three copy-pasted HTML files. No live data yet (that's Phase 3).
   iframe loading is unreliable for sandboxed automated screenshots) — the embed code itself is
   an unchanged port of the original, but worth a 10-second look in a real browser before Phase 2.
 
-## Phase 2 — Deploy to Vercel (parallel to GitHub Pages, no cutover yet)
+## Phase 2 — Deploy to Vercel — DONE
 
-- [ ] Connect the GitHub repo to Vercel (Import Project in the Vercel dashboard).
-- [ ] Confirm auto-deploy on push to `main` and preview deployments on PRs/branches.
-- [ ] Verify the `*.vercel.app` URL matches local dev exactly.
-- [ ] Leave the existing GitHub Pages site untouched and live — no DNS or Pages-settings
-      changes yet. Vercel and GitHub Pages can run side by side during the rest of this plan.
+(Done after Phase 3, at the user's request.)
+
+- [x] Pushed the Phase 1 + 3 work to `origin/main` (commit `e6a5550`). This deleted the old
+      `index.html` / `equity-research/*.html` files that GitHub Pages was serving from `main`
+      — confirmed the live Pages site (`samuelpbowie.github.io/LighthouseCapitalResearch`) was
+      still returning 200 right after the push (likely cached), but the user explicitly chose
+      to accept any brief downtime rather than branch around it, since Vercel was going live
+      within minutes anyway.
+- [x] Connected the GitHub repo to Vercel (user did the dashboard Import Project step —
+      no `gh`/`vercel` CLI available in this environment, so this part was manual).
+- [x] Deployed: **https://lighthouse-capital-research.vercel.app/**
+- [x] Verified the deployment matches local exactly: all routes return 200 (`/`, `/research`,
+      `/research/okta`, `/model_files/Okta Model.xlsm`), the live price fetch ran successfully
+      at build time on Vercel (Current Price showed the same live OKTA quote as local), and
+      side-by-side screenshots of the homepage, research listing, LCR rating card, and comps
+      table's Live Price row are pixel-identical to local dev.
+- [ ] Confirm auto-deploy on push / PR previews — not yet tested (no follow-up push since the
+      initial import). Worth a quick check next time a change is pushed.
+
+**Decision change from the original plan:** the user decided to **remove GitHub Pages
+entirely** rather than run it side-by-side during the rest of the migration (originally
+planned for Phase 5). There's nothing in the repo to clean up for this — no `CNAME`,
+`.nojekyll`, or `.github/workflows` file exists; Pages was configured purely via
+Settings → Pages → "Deploy from branch", so disabling it is a GitHub Settings UI action only
+the user can do. Phase 5's GitHub Pages checklist item is superseded by this.
 
 ## Phase 3 — Live price automation — DONE
 
-(Done out of order, before Phase 2, at the user's request — Phase 2/Vercel deploy is still
-pending below.)
+(Done out of order, before Phase 2, at the user's request.)
 
 - [x] Added `yahoo-finance2` (`^3.15.3`) as a dependency. Note: v3's API changed from the
       plan's assumption — it now requires `new YahooFinance()` instantiation rather than using
@@ -191,12 +210,11 @@ the scenario charts and KPI table won't silently break the next time a fiscal ye
 
 ## Phase 5 — Cutover
 
-- [ ] Final smoke test on the Vercel production URL (all charts, tables, live prices,
-      downloads working).
+- [x] Final smoke test on the Vercel production URL — done as part of Phase 2 verification
+      above (routes, live prices, comps table, model download all confirmed working).
 - [ ] If a custom domain is wanted: add it in the Vercel dashboard, update DNS.
-- [ ] Confirm current GitHub Pages source in repo Settings → Pages (likely "Deploy from
-      branch" given the empty `.github/workflows` folder — verify, don't assume), then
-      disable it or point it elsewhere.
+- [x] GitHub Pages: superseded — user is disabling it directly in Settings → Pages (Source →
+      "None") rather than waiting until cutover. Nothing left to do here.
 - [ ] Update any external links (LinkedIn, email signature, etc.) pointing at the old GitHub
       Pages URL — manual follow-up only the user can do.
 
